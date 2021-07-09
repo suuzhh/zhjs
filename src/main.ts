@@ -19,8 +19,23 @@ export function useFileSelector (option?: FileSelectorOption) {
     input.accept = opt.accept
   }
 
+  let onSelect: Function | null = null
+  let onError: Function | null = null
+
+  function bindEvents () {
+    input.addEventListener('change', () => {
+      if (input.files && input.files.length > 0) {
+        onSelect && onSelect(Array.from(input.files!))
+      }
+      // reset input
+      input.value = ''
+    })
+    input.addEventListener('error', e => {
+      onError && onError(e)
+    })
+  }
+  bindEvents()
   parseOption(opt)
-  console.dir(input)
 
   return {
     openFileDialog (option?: FileSelectorOption) {
@@ -28,16 +43,9 @@ export function useFileSelector (option?: FileSelectorOption) {
       parseOption(opt)
 
       return new Promise((resolve, reject) => {
-        input.addEventListener('change', () => {
-          if (input.files && input.files.length > 0) {
-            resolve(Array.from(input.files!))
-          } else {
-            reject('关闭')
-          }
-        }, { once: true })
-        input.files = null
+        onSelect = resolve
+        onError = reject
         input.click()
-        // FIXME: 关闭弹窗事件不能正确触发
       })
     }
   }

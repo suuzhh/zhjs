@@ -12,7 +12,7 @@
   <script>
     console.log(zhjs)
     const selector = zhjs.useFileSelector({
-      multiple: false,
+      multiple: true,
       // 参考 https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input/file#accept
       accept: '.jpg,.png'
     })
@@ -20,6 +20,9 @@
       .getElementById('btn')
       .addEventListener('click', () => {
         selector.openFileDialog()
+          .then(files => {
+            console.log(files)
+          })
       })
   </script>
 </body>

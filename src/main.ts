@@ -21,17 +21,24 @@ export function useFileSelector (option?: FileSelectorOption) {
 
   parseOption(opt)
   console.dir(input)
-  let promise: Promise<null> | null = null
-  input.addEventListener('change', e => {
-
-  })
 
   return {
     openFileDialog (option?: FileSelectorOption) {
       const opt = Object.assign({}, DEFAULT_OPTION, option)
       parseOption(opt)
-      input.click()
-      return promise
+
+      return new Promise((resolve, reject) => {
+        input.addEventListener('change', () => {
+          if (input.files && input.files.length > 0) {
+            resolve(Array.from(input.files!))
+          } else {
+            reject('关闭')
+          }
+        }, { once: true })
+        input.files = null
+        input.click()
+        // FIXME: 关闭弹窗事件不能正确触发
+      })
     }
   }
 }

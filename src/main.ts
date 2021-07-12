@@ -38,7 +38,7 @@ export function useFileSelector (option?: FileSelectorOption) {
   parseOption(opt)
 
   return {
-    openFileDialog (option?: FileSelectorOption) {
+    openFileDialog (option?: FileSelectorOption): Promise<File[]> {
       const opt = Object.assign({}, DEFAULT_OPTION, option)
       parseOption(opt)
 

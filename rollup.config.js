@@ -6,6 +6,15 @@ export default [
     input: 'src/main.ts',
     output: {
       name: 'zhjs',
+      file: 'dist/zhjs.es.js',
+      format: 'es'
+    },
+    plugins: [typescript(), terser()],
+  },
+  {
+    input: 'src/main.ts',
+    output: {
+      name: 'zhjs',
       file: 'dist/zhjs.umd.js',
       format: 'umd'
     },

@@ -12,23 +12,29 @@ const DEFAULT_OPTION: RealFileSelectorOption = {
 
 export class FileSelector {
   private input: HTMLInputElement;
+  private innerOption: RealFileSelectorOption;
   private onSelect: Function | undefined = undefined
   private onError: Function | undefined = undefined
 
   constructor (option?: FileSelectorOption) {
-    const opt = Object.assign({}, DEFAULT_OPTION, option)
+    this.innerOption = Object.assign({}, DEFAULT_OPTION, option)
     this.input = document.createElement('input')
     this.input.setAttribute('type', 'file')
 
     this.input.addEventListener('change', this.selectEvent)
     this.input.addEventListener('error', this.errorEvent)
-
-    this.parseOption(opt)
   }
 
   private parseOption (opt: RealFileSelectorOption) {
+    // if (opt.multiple) {
+    //   this.input.setAttribute('multiple', 'multiple')
+    // } else {
+    //   this.input.removeAttribute('multiple')
+    // }
     this.input.multiple = Boolean(opt.multiple)
+    
     this.input.accept = opt.accept
+    console.dir(this.input)
   }
 
   private selectEvent = () => {
@@ -44,7 +50,7 @@ export class FileSelector {
   }
 
   openFileDialog (option?: FileSelectorOption): Promise<File[]> {
-    const opt = Object.assign({}, DEFAULT_OPTION, option)
+    const opt = Object.assign({}, this.innerOption, option)
     this.parseOption(opt)
 
     return new Promise((resolve, reject) => {

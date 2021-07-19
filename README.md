@@ -32,8 +32,13 @@
     { id: 1, pid: 0 },
     { id: 0, pid: null }
   ]
-  console.log(zhjs.arrayToTree(arr, { parentProperty: 'pid' }))
   // output: 树形结构
+  const tree = zhjs.arrayToTree(arr, { parentProperty: 'pid' })
+  // getRootNode
+  console.log(tree.getRoot())
+  // getLevelChildren
+  console.log(tree.getLevel(1))
+  // output 1 2 3
 ```
 
 ## TODO:
@@ -42,3 +47,6 @@
 ## changelog
 - 0.1.4
   修复文件选择器初始化时配置项不生效的问题
+- 0.1.5
+  调整`arratToTree`返回类型为`Tree`
+  增加`Tree`类型的公开方法`getRoot`和`getLevel`

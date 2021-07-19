@@ -37,7 +37,13 @@
       { id: 1, pid: 0 },
       { id: 0, pid: null }
     ]
-    console.log(zhjs.arrayToTree(arr, { parentProperty: 'pid' }))
+    const tree = zhjs.arrayToTree(arr, { parentProperty: 'pid' })
+    // getRootNode
+    console.log(tree.getRoot())
+    // getLevelChildren
+    console.log(tree.getLevel(1))
+    // output 1 2 3
+    
   </script>
 </body>
 </html>

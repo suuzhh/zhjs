@@ -22,6 +22,7 @@ export class Tree<T extends object> {
   private origin: T[]
   private originMap = new Map<any, T>()
   private originTree: TreeNode<T> | undefined;
+  private levelMap = new Map<number, TreeNode<T>[]>()
 
   constructor (array: T[], option?: TreeOption<T>) {
     this.option = Object.assign({}, DEFAULT_OPTION, option)
@@ -68,27 +69,40 @@ export class Tree<T extends object> {
     const rootNode = new TreeNode<T>(
       rootID,
       undefined,
+      0,
       [],
       this.originMap.get(rootID)
     )
 
-    const recursive = (pid: number | string, arr: T[] = []) => {
+    const recursive = (pid: number | string, arr: T[] = [], level = 0) => {
       const [match, unmatch] = this.splitArrayByPid(pid, arr)
       const children = []
+      level++
       for (const it of match) {
         const node: TreeNode<T> = new TreeNode(
           it[customID] as any,
           it[parentProperty] as any,
-          recursive(it[customID] as any, unmatch),
+          level,
+          recursive(it[customID] as any, unmatch, level),
           it
         )
         children.push(node)
       }
+      this.setLevelMap(level, ...children)
       return children
     }
     rootNode.children = recursive(rootID, this.origin)
 
     this.originTree = rootNode
+  }
+
+  private setLevelMap (level: number, ...nodes: TreeNode<T>[]) {
+    if (this.levelMap.has(level)) {
+      const map = this.levelMap.get(level)
+      map!.push(...nodes)
+    } else {
+      this.levelMap.set(level, nodes)
+    }
   }
 
   /**
@@ -108,8 +122,16 @@ export class Tree<T extends object> {
     return [match, unmatch]
   }
 
-  getTree () {
+  getRoot () {
     return this.originTree
+  }
+  /**
+   * 获取对应层级的节点数据
+   * @param level 
+   * @returns 
+   */
+  getLevel (level: number) {
+    return this.levelMap.get(level)
   }
 }
 
@@ -117,8 +139,10 @@ export class TreeNode<T> {
   constructor (
     readonly id: number | string,
     readonly pid?: number | string,
+    readonly level: number = 0,
     public children: TreeNode<T>[] = [],
-    public readonly data: T | null = null) {}
+    public readonly data: T | null = null,
+  ) {}
 
   /**
    * 是否叶子节点

@@ -5,7 +5,6 @@ export function useFileSelector (option?: FileSelectorOption) {
   return new FileSelector(option)
 }
 
-export function arrayToTree<T extends object>(arr: T[], option?: TreeOption<T>): TreeNode<T> | undefined {
-  const tree = new Tree(arr, option)
-  return tree.getTree()
+export function arrayToTree<T extends object>(arr: T[], option?: TreeOption<T>): Tree<T> {
+  return new Tree(arr, option)
 }

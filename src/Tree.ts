@@ -23,6 +23,7 @@ export class Tree<T extends object> {
   private originMap = new Map<any, T>()
   private originTree: TreeNode<T> | undefined;
   private levelMap = new Map<number, TreeNode<T>[]>()
+  private nodeMap = new Map<number|string, TreeNode<T>>()
 
   constructor (array: T[], option?: TreeOption<T>) {
     this.option = Object.assign({}, DEFAULT_OPTION, option)
@@ -73,7 +74,7 @@ export class Tree<T extends object> {
       [],
       this.originMap.get(rootID)
     )
-
+    
     const recursive = (pid: number | string, arr: T[] = [], level = 0) => {
       const [match, unmatch] = this.splitArrayByPid(pid, arr)
       const children = []
@@ -87,12 +88,14 @@ export class Tree<T extends object> {
           it
         )
         children.push(node)
+        this.setNodeMap(node.id, node)
       }
       this.setLevelMap(level, ...children)
       return children
     }
     rootNode.children = recursive(rootID, this.origin)
-
+    this.setLevelMap(0, rootNode)
+    this.setNodeMap(rootNode.id, rootNode)
     this.originTree = rootNode
   }
 
@@ -103,6 +106,10 @@ export class Tree<T extends object> {
     } else {
       this.levelMap.set(level, nodes)
     }
+  }
+
+  private setNodeMap (id: string | number, node: TreeNode<T>) {
+    this.nodeMap.set(id, node)
   }
 
   /**
@@ -132,6 +139,12 @@ export class Tree<T extends object> {
    */
   getLevel (level: number) {
     return this.levelMap.get(level)
+  }
+  /**
+   * 获取指定customID值的节点
+   */
+  find (id: number | string) {
+    return this.nodeMap.get(id)
   }
 }
 

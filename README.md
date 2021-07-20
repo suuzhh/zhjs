@@ -39,6 +39,8 @@
   // getLevelChildren
   console.log(tree.getLevel(1))
   // output 1 2 3
+  console.log(tree.find(9))
+  // output { id: 9, pid: 5 }
 ```
 
 ## TODO:
@@ -50,3 +52,6 @@
 - 0.1.5
   调整`arratToTree`返回类型为`Tree`
   增加`Tree`类型的公开方法`getRoot`和`getLevel`
+- 0.1.6
+  修复 `Tree.getLevel`无法获取0层节点 的问题
+  增加`Tree`类型的公开方法`find`用于获取给定`customID`的节点

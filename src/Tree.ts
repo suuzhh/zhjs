@@ -129,6 +129,14 @@ export class Tree<T extends object> {
     return [match, unmatch]
   }
 
+  /**
+   * 返回源数组
+   * @returns 
+   */
+  getArray () {
+    return this.origin
+  }
+
   getRoot () {
     return this.originTree
   }
@@ -145,6 +153,23 @@ export class Tree<T extends object> {
    */
   find (id: number | string) {
     return this.nodeMap.get(id)
+  }
+
+  /**
+   * 对node.children排序
+   * 内部使用Array.sort
+   */
+  sort (compareFn?: (a: TreeNode<T>, b: TreeNode<T>) => number) {
+    const recursion = (children: TreeNode<T>[]) => {
+      if (children.length > 0) {
+        children.sort(compareFn)
+        for (const node of children) {
+          recursion(node.children)
+        }
+      }
+    }
+    recursion(this.originTree!.children)
+    return this.originTree
   }
 }
 

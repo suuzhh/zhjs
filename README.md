@@ -41,9 +41,12 @@
   // output 1 2 3
   console.log(tree.find(9))
   // output { id: 9, pid: 5 }
+  console.log(tree.sort((a, b) => a.id - b.id))
+  // sort by node.id, from low to height
 ```
 
 ## TODO:
+- `Tree`增加`update`方法 传入数组对整棵树进行动态更新
 - 增加单元测试
 
 ## changelog
@@ -55,3 +58,6 @@
 - 0.1.6
   修复 `Tree.getLevel`无法获取0层节点 的问题
   增加`Tree`类型的公开方法`find`用于获取给定`customID`的节点
+- 0.1.7
+  增加`Tree.sort`公开方法，对每个children进行排序，参考[Array.sort](https://cgi.cse.unsw.edu.au/~cs2041/doc/MDN_javascript_reference/Web/JavaScript/Reference/Global_Objects/Array/sort.html#:~:text=Array.prototype.sort%28%29%20-%20JavaScript%20%7C%20MDN%20The%20sort%28%29%20method,array%20in%20place%20and%20returns%20the%20sorted%20array.)
+  增加`Tree.getArray`方法，获取树的源数组

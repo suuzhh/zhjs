@@ -1,8 +1,8 @@
 {
   "name": "zhjs",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "",
-  "main": "dist/zhjs.umd.js",
+  "main": "dist/zhjs.es.js",
   "types": "dist/types/main.d.ts",
   "scripts": {
     "build": "rollup -c",

@@ -6,7 +6,7 @@ interface RealTreeOption<T> {
   // 节点唯一标识 默认为`id`
   customID: keyof T;
   // 根节点唯一标识 默认为0
-  rootID: string | number
+  rootID: T[keyof T]
 }
 
 const DEFAULT_OPTION: RealTreeOption<any | { parentId: number, id: number }> = {
@@ -23,7 +23,7 @@ export class Tree<T extends object> {
   private originMap = new Map<any, T>()
   private originTree: TreeNode<T> | undefined;
   private levelMap = new Map<number, TreeNode<T>[]>()
-  private nodeMap = new Map<number|string, TreeNode<T>>()
+  private nodeMap = new Map<T[keyof T], TreeNode<T>>()
 
   constructor (array: T[], option?: TreeOption<T>) {
     this.option = Object.assign({}, DEFAULT_OPTION, option)
@@ -67,6 +67,8 @@ export class Tree<T extends object> {
    */
   private assemble () {
     const { customID, parentProperty, rootID } = this.option
+    // const rootData = this.originMap.get(rootID)
+
     const rootNode = new TreeNode<T>(
       rootID,
       undefined,
@@ -75,7 +77,7 @@ export class Tree<T extends object> {
       this.originMap.get(rootID)
     )
     
-    const recursive = (pid: number | string, arr: T[] = [], level = 0) => {
+    const recursive = (pid: T[keyof T], arr: T[] = [], level = 0) => {
       const [match, unmatch] = this.splitArrayByPid(pid, arr)
       const children = []
       level++
@@ -108,7 +110,7 @@ export class Tree<T extends object> {
     }
   }
 
-  private setNodeMap (id: string | number, node: TreeNode<T>) {
+  private setNodeMap (id: T[keyof T], node: TreeNode<T>) {
     this.nodeMap.set(id, node)
   }
 
@@ -118,7 +120,7 @@ export class Tree<T extends object> {
    * @param arr
    * @return {matched, unmatched}
    */
-  private splitArrayByPid (pid: number | string, arr: T[] = []) {
+  private splitArrayByPid (pid: T[keyof T], arr: T[] = []) {
     const { parentProperty } = this.option
     const [match, unmatch]: T[][] = [[], []]
     for (const it of arr) {
@@ -151,7 +153,7 @@ export class Tree<T extends object> {
   /**
    * 获取指定customID值的节点
    */
-  find (id: number | string) {
+  find (id: T[keyof T]) {
     return this.nodeMap.get(id)
   }
 
@@ -175,8 +177,8 @@ export class Tree<T extends object> {
 
 export class TreeNode<T> {
   constructor (
-    readonly id: number | string,
-    readonly pid?: number | string,
+    readonly id: T[keyof T],
+    readonly pid?: T[keyof T],
     readonly level: number = 0,
     public children: TreeNode<T>[] = [],
     public readonly data: T | null = null,
@@ -217,5 +219,19 @@ export class TreeNode<T> {
       }
     }
     return findNode
+  }
+  /**
+   * 打平树，返回列表结构的TreeNode
+   */
+  flat () {
+    const nodes: TreeNode<T>[] = []
+    const rec = (node: TreeNode<T>) => {
+      nodes.push(node)
+      if (node.children.length > 0) {
+        node.children.forEach(child => rec(child))
+      }
+    }
+    rec(this)
+    return nodes
   }
 }

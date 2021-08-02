@@ -43,6 +43,8 @@
   // output { id: 9, pid: 5 }
   console.log(tree.sort((a, b) => a.id - b.id))
   // sort by node.id, from low to height
+  console.log(tree.getRoot().flat())
+  // return flat tree nodes array
 ```
 
 ## TODO:
@@ -61,3 +63,6 @@
 - 0.1.7
   增加`Tree.sort`公开方法，对每个children进行排序，参考[Array.sort](https://cgi.cse.unsw.edu.au/~cs2041/doc/MDN_javascript_reference/Web/JavaScript/Reference/Global_Objects/Array/sort.html#:~:text=Array.prototype.sort%28%29%20-%20JavaScript%20%7C%20MDN%20The%20sort%28%29%20method,array%20in%20place%20and%20returns%20the%20sorted%20array.)
   增加`Tree.getArray`方法，获取树的源数组
+- 0.1.8
+  增加`TreeNode.flat`方法，返回打平后的`TreeNode`数组
+  修复`Tree`根节点如果在给定的源数组中存在时，不能正确往`TreeNode.data`中插入数据的问

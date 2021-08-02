@@ -38,7 +38,7 @@
       { id: 1, pid: 0 },
       { id: 0, pid: null }
     ]
-    const tree = zhjs.arrayToTree(arr, { parentProperty: 'pid' })
+    const tree = zhjs.arrayToTree(arr, { parentProperty: 'pid', rootID: 5 })
     // getRootNode
     console.log(tree.getRoot())
     // getLevelChildren
@@ -48,6 +48,8 @@
     // output { id: 9, pid: 5 }
     console.log(tree.sort((a, b) => a.id - b.id))
     // sort by node.id, from low to height
+    console.log(tree.getRoot().flat())
+    // return flat tree nodes array
     
   </script>
 </body>

@@ -1,4 +1,4 @@
-import { isEmpty, isString } from './util/typeCheck'
+import { isEmpty, isString } from '../util/typeCheck'
 
 interface RealTreeOption<T> {
   // 关联父节点`customID`值的字段名称 默认为`parentId`
@@ -148,7 +148,8 @@ export class Tree<T extends object> {
    * @returns 
    */
   getLevel (level: number) {
-    return this.levelMap.get(level)
+    const trees =  this.levelMap.get(level)
+    return trees || []
   }
   /**
    * 获取指定customID值的节点

@@ -30,9 +30,14 @@ function isEmpty (param: any) {
   return param === undefined || param === null
 }
 
+function isFunc (params: unknown) {
+  return typeof params === 'function'
+}
+
 export {
   isEmpty,
   isArray,
   isNumber,
-  isString
+  isString,
+  isFunc
 }

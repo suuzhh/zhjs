@@ -49,7 +49,7 @@
 
 ## TODO:
 - `Tree`增加`update`方法 传入数组对整棵树进行动态更新
-- 增加单元测试
+- 增加`Tasker`组件
 
 ## changelog
 - 0.1.4
@@ -66,3 +66,5 @@
 - 0.1.8
   增加`TreeNode.flat`方法，返回打平后的`TreeNode`数组
   修复`Tree`根节点如果在给定的源数组中存在时，不能正确往`TreeNode.data`中插入数据的问
+- 0.1.9
+  增加`Tree`模块的单元测试

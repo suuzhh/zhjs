@@ -1,5 +1,6 @@
 import typescript from 'rollup-plugin-typescript2'
 import { terser } from 'rollup-plugin-terser'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
 
 export default [
   {
@@ -11,8 +12,14 @@ export default [
     },
     plugins: [
       typescript({
-        useTsconfigDeclarationDir: true
+        useTsconfigDeclarationDir: true,
+        tsconfigOverride: {
+          compilerOptions: {
+            target: 'es2015'
+          }
+        }
       }),
+      nodeResolve()
       // terser()
     ]
   },
@@ -27,7 +34,8 @@ export default [
       typescript({
         useTsconfigDeclarationDir: true
       }),
-      terser()
+      nodeResolve(),
+      terser(),
     ]
   },
   {
@@ -41,6 +49,7 @@ export default [
       typescript({
         useTsconfigDeclarationDir: true
       }),
+      nodeResolve(),
       terser()
     ]
   }

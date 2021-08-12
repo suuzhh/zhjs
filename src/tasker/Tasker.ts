@@ -1,14 +1,14 @@
 import { CacheRunner } from './Runner'
-import { EventEmitter } from './EventEmitter'
 import { isFunc } from '../util/typeCheck'
+import { Observer } from 'rxjs'
 
+let obIndex = 0
+
+type Obs = Partial<Observer<TaskState>> // | ((value: TaskState) => void)
 export class Tasker {
   private taskMap = new Map<string, Task>()
-  private event: {
-    onSuccess?: (e: TaskState) => void
-  } = {}
 
-  private eventEmitter = new EventEmitter()
+  private observerMap = new Map<number, Obs>()
   // 运行器
   private cacheRunner: CacheRunner
 
@@ -19,17 +19,30 @@ export class Tasker {
     tasks.forEach(task => {
       this.taskMap.set(task.name, task);
     })
-    this.cacheRunner = new CacheRunner(this.eventEmitter)
-
-    this.eventEmitter.onSuccess(e => {
-      console.log(e)
+    this.cacheRunner = new CacheRunner()
+    this.cacheRunner.event.onSuccess(e => {
       const state = this.registedStateMap.get(e.name)
       if (state) {
         state.data = e.data
         state.time = Date.now()
         this.registedStateMap.set(e.name, state)
-        this.event.onSuccess && this.event.onSuccess(state)
+        this.dispatchSuccess(state)
       }
+    })
+    this.cacheRunner.event.onError(err => {
+      this.dispatchError(err)
+    })
+  }
+
+  private dispatchSuccess (state: TaskState) {
+    this.observerMap.forEach(ob => {
+      ob.next && ob.next(state)
+    })
+  }
+
+  private dispatchError (err: Error) {
+    this.observerMap.forEach(ob => {
+      ob.error && ob.error(err)
     })
   }
 
@@ -84,10 +97,17 @@ export class Tasker {
     }
   }
 
+  /**
+   *  TODO:
+   * @param taskName
+   */
   taskAsOnce (taskName: string) {
 
   }
-
+  /**
+   *  TODO:
+   * @param taskName
+   */
   takeAsUnique (taskName: string) {
 
   }
@@ -97,14 +117,17 @@ export class Tasker {
    */
   clear () {
     this.cacheRunner.clear()
-    this.eventEmitter.clear()
     this.registedStateMap.clear()
   }
 
-  // 注册事件
-  onSuccess (cb: (state: TaskState) => void) {
-    this.event.onSuccess = cb
-    return this
+  mountObserver (ob: Obs) {
+    const map = this.observerMap
+    const index = ++obIndex
+    map.set(index, ob)
+
+    return function unMountObserver () {
+      map.delete(index)
+    }
   }
 
   static fromTasks (tasks: Task[]) {
@@ -115,11 +138,14 @@ export class Tasker {
 export interface Task {
   name: string,
   model: {
-    default: () => unknown | unknown
+    default: () => unknown | unknown,
+    // 数据转换
+    dataTransfer?: (res: unknown) => unknown,
   },
   action: {
     run: (...args: any[]) => Promise<unknown>
   },
+  // TODO:未实现
   event?: {
     onSuccess?: (res: unknown) => void
     onError?: (e: Error) => void

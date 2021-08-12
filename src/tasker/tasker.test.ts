@@ -24,11 +24,19 @@ describe('Tasker', () => {
     const tasker = Tasker
       .fromTasks(mockTasks)
       .regist(['TEST_1'])
-      .onSuccess(state => {
+    
+    tasker.mountObserver({
+      next: state => {
         expect(state.name).toEqual('TEST_1')
         expect((state.data as number[]).length).toEqual(3)
         done()
-      })
+      }
+    })
+      // .onSuccess(state => {
+      //   expect(state.name).toEqual('TEST_1')
+      //   expect((state.data as number[]).length).toEqual(3)
+      //   done()
+      // })
     tasker
       .takeAsCache('TEST_1')
       .run()

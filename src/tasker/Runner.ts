@@ -19,17 +19,28 @@ interface Runable {
 export class CacheRunner implements Runable {
   // 唯一编码对应的subs对象
   private runningTasksHandler = new Map<string, Subscription>()
+  private eventEmitter = new EventEmitter()
 
-  constructor (private eventEmitter: EventEmitter) {}
+  constructor() {}
 
+  get event () {
+    return this.eventEmitter
+  }
+
+  // TODO: 设置间隔时间，如果没有达到间隔时长使用旧数据
   run(task: Task): string {
     if (!this.runningTasksHandler.has(task.name)) {
       const emitter = this.eventEmitter
-      const clearHandler = this.clearHandler
+      const clearHandler = this.clearHandler.bind(this)
       const promiseSource = from(task.action.run())
       this.runningTasksHandler.set(task.name, promiseSource.subscribe({
         next (res) {
-          emitter.dispatchSuccess(task.name, res)
+          const data = task.model.dataTransfer ? task.model.dataTransfer(res) : res
+          emitter.dispatchSuccess(task.name, data)
+          clearHandler(task.name)
+        },
+        error (err) {
+          emitter.dispatchError(err)
           clearHandler(task.name)
         }
       }))

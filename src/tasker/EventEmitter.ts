@@ -1,26 +1,31 @@
 import { Subject } from 'rxjs'
 
 export class EventEmitter {
-  private handleSuccess: Subject<EventData> = new Subject()
-  constructor() {
-
-  }
+  private subject: Subject<EventData> = new Subject()
 
   // 事件监听： 数据成功返回
   onSuccess (cb: (value: EventData) => void) {
-    this.handleSuccess.subscribe(cb)
+    this.subject.subscribe(cb)
+  }
+
+  onError (cb: (err: Error) => void) {
+    this.subject.subscribe({ error: cb })
   }
 
   dispatchSuccess (name: string, data: unknown) {
-    this.handleSuccess.next({ name, data })
+    this.subject.next({ name, data })
+  }
+
+  dispatchError (err: Error) {
+    this.subject.error(err)
   }
 
   clear () {
-    this.handleSuccess.unsubscribe()
+    this.subject.unsubscribe()
   }
 }
 
-interface EventData {
+export interface EventData {
   name: string
   data: unknown
 }

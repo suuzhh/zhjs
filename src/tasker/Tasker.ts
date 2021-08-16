@@ -1,6 +1,6 @@
 import { CacheRunner } from './Runner'
 import { isFunc } from '../util/typeCheck'
-import { Observer } from 'rxjs'
+import { Observer, Subject } from 'rxjs'
 
 let obIndex = 0
 
@@ -20,18 +20,6 @@ export class Tasker {
       this.taskMap.set(task.name, task);
     })
     this.cacheRunner = new CacheRunner()
-    this.cacheRunner.event.onSuccess(e => {
-      const state = this.registedStateMap.get(e.name)
-      if (state) {
-        state.data = e.data
-        state.time = Date.now()
-        this.registedStateMap.set(e.name, state)
-        this.dispatchSuccess(state)
-      }
-    })
-    this.cacheRunner.event.onError(err => {
-      this.dispatchError(err)
-    })
   }
 
   private dispatchSuccess (state: TaskState) {
@@ -81,19 +69,27 @@ export class Tasker {
     }, [])
   }
 
+  // private storeRunning
+
   takeAsCache (taskName: string) {
     const task = this.taskMap.get(taskName)
     if (!task) {
       throw new Error(`Task ${taskName} 未定义`)
     }
-    let id: string
-    return {
-      run: () => {
-        id = this.cacheRunner.run(task)
+
+    const commonObserver = {
+      next: (state: TaskState) => {
+        this.dispatchSuccess(state)
       },
-      cancel: () => {
-        id && this.cacheRunner.cancel(id)
+      error: (err: Error) => {
+        this.dispatchError(err)
       }
+    }
+    const $readyToRun = this.cacheRunner.run2(task)
+
+    return (observer?: Obs) => {
+      $readyToRun.subscribe(commonObserver)
+      return $readyToRun.subscribe(observer).unsubscribe
     }
   }
 
@@ -144,15 +140,10 @@ export interface Task {
   },
   action: {
     run: (...args: any[]) => Promise<unknown>
-  },
-  // TODO:未实现
-  event?: {
-    onSuccess?: (res: unknown) => void
-    onError?: (e: Error) => void
   }
 }
 
-interface TaskState {
+export interface TaskState {
   // 任务名称
   name: string,
   // 源数据

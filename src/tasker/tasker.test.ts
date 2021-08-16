@@ -8,9 +8,15 @@ const mockTasks: Task[] = [
     },
     action: {
       run: () => Promise.resolve([1, 2, 3])
+    }
+  },
+  {
+    name: 'TEST_2',
+    model: {
+      default: () => []
     },
-    event: {
-      onSuccess: () => {}
+    action: {
+      run: () => Promise.reject(new Error('错误'))
     }
   }
 ]
@@ -23,7 +29,7 @@ describe('Tasker', () => {
   test('`takeAsCache`正确执行任务', done => {
     const tasker = Tasker
       .fromTasks(mockTasks)
-      .regist(['TEST_1'])
+      .regist(['TEST_1', 'TEST_2'])
     
     tasker.mountObserver({
       next: state => {
@@ -37,9 +43,12 @@ describe('Tasker', () => {
       //   expect((state.data as number[]).length).toEqual(3)
       //   done()
       // })
-    tasker
+    const run1 = tasker
+      .takeAsCache('TEST_2')
+    run1()
+    const run2 = tasker
       .takeAsCache('TEST_1')
-      .run()
+    run2()
     const states = tasker.getTasksState(['TEST_1'])
     expect(states.length).toEqual(1)
   })

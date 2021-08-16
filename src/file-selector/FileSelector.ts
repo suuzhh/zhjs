@@ -34,7 +34,6 @@ export class FileSelector {
     this.input.multiple = Boolean(opt.multiple)
     
     this.input.accept = opt.accept
-    console.dir(this.input)
   }
 
   private selectEvent = () => {

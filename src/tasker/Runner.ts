@@ -1,6 +1,6 @@
-import { Task } from "./Tasker"
+import { Task, TaskState } from "./Tasker"
 import { EventEmitter } from "./EventEmitter"
-import { Subscription, from } from 'rxjs'
+import { Subscription, from, Observable, map } from 'rxjs'
 
 interface Runable {
   // 执行任务 返回任务的唯一编码
@@ -19,6 +19,7 @@ interface Runable {
 export class CacheRunner implements Runable {
   // 唯一编码对应的subs对象
   private runningTasksHandler = new Map<string, Subscription>()
+  private runningTaskObservers = new Map<string, Observable<TaskState>>()
   private eventEmitter = new EventEmitter()
 
   constructor() {}
@@ -47,6 +48,25 @@ export class CacheRunner implements Runable {
     }
     return task.name
   }
+
+  run2(task: Task): Observable<TaskState> {
+    let runningObs = this.runningTaskObservers.get(task.name)
+    if (!runningObs) {
+      runningObs = from(task.action.run())
+        .pipe(
+          map(res => {
+            const data = task.model.dataTransfer ? task.model.dataTransfer(res) : res
+            return {
+              name: task.name,
+              data,
+              time: Date.now()
+            }
+          })
+        )
+    }
+    return runningObs
+  }
+
   cancel(name: string): void {
     this.clearHandler(name)
   }

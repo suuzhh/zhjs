@@ -1,10 +1,9 @@
 import { Task, TaskState } from "./Tasker"
-import { EventEmitter } from "./EventEmitter"
 import { Subscription, from, Observable, map } from 'rxjs'
 
 interface Runable {
   // 执行任务 返回任务的唯一编码
-  run (task: Task): string
+  run (task: Task): Observable<TaskState>
   // 根据唯一编码停止任务
   cancel (taskName: string): void
   // 清空所有任务 执行中的也会被清除
@@ -20,36 +19,10 @@ export class CacheRunner implements Runable {
   // 唯一编码对应的subs对象
   private runningTasksHandler = new Map<string, Subscription>()
   private runningTaskObservers = new Map<string, Observable<TaskState>>()
-  private eventEmitter = new EventEmitter()
 
   constructor() {}
 
-  get event () {
-    return this.eventEmitter
-  }
-
-  // TODO: 设置间隔时间，如果没有达到间隔时长使用旧数据
-  run(task: Task): string {
-    if (!this.runningTasksHandler.has(task.name)) {
-      const emitter = this.eventEmitter
-      const clearHandler = this.clearHandler.bind(this)
-      const promiseSource = from(task.action.run())
-      this.runningTasksHandler.set(task.name, promiseSource.subscribe({
-        next (res) {
-          const data = task.model.dataTransfer ? task.model.dataTransfer(res) : res
-          emitter.dispatchSuccess(task.name, data)
-          clearHandler(task.name)
-        },
-        error (err) {
-          emitter.dispatchError(err)
-          clearHandler(task.name)
-        }
-      }))
-    }
-    return task.name
-  }
-
-  run2(task: Task): Observable<TaskState> {
+  run(task: Task): Observable<TaskState> {
     let runningObs = this.runningTaskObservers.get(task.name)
     if (!runningObs) {
       runningObs = from(task.action.run())

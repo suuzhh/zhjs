@@ -85,7 +85,7 @@ export class Tasker {
         this.dispatchError(err)
       }
     }
-    const $readyToRun = this.cacheRunner.run2(task)
+    const $readyToRun = this.cacheRunner.run(task)
 
     return (observer?: Obs) => {
       $readyToRun.subscribe(commonObserver)

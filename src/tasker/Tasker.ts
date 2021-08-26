@@ -1,4 +1,4 @@
-import { CacheRunner } from './Runner'
+import { CacheRunner, RunnerConfig } from './Runner'
 import { isFunc } from '../util/typeCheck'
 import { Observer, Subject } from 'rxjs'
 
@@ -15,23 +15,19 @@ export class Tasker {
   // 数据状态
   private registedStateMap = new Map<string, TaskState>()
 
-  private constructor (tasks: Task[]) {
+  private constructor (tasks: Task[], config?: Partial<RunnerConfig>) {
     tasks.forEach(task => {
       this.taskMap.set(task.name, task);
     })
-    this.cacheRunner = new CacheRunner()
+    this.cacheRunner = new CacheRunner(config)
   }
 
   private dispatchSuccess (state: TaskState) {
     this.observerMap.forEach(ob => {
       ob.next && ob.next(state)
     })
-  }
-
-  private dispatchError (err: Error) {
-    this.observerMap.forEach(ob => {
-      ob.error && ob.error(err)
-    })
+    // 更新registedStateMap
+    this.registedStateMap.set(state.name, state)
   }
 
   regist (names: string[]) {
@@ -44,7 +40,7 @@ export class Tasker {
         const state = {
           name: name,
           data: isFunc(task.model.default) ? task.model.default() : task.model.default,
-          time: null
+          lastUpdated: null
         }
         this.registedStateMap.set(name, state)
       }
@@ -69,8 +65,6 @@ export class Tasker {
     }, [])
   }
 
-  // private storeRunning
-
   takeAsCache (taskName: string) {
     const task = this.taskMap.get(taskName)
     if (!task) {
@@ -80,16 +74,18 @@ export class Tasker {
     const commonObserver = {
       next: (state: TaskState) => {
         this.dispatchSuccess(state)
-      },
-      error: (err: Error) => {
-        this.dispatchError(err)
       }
     }
-    const $readyToRun = this.cacheRunner.run(task)
-
-    return (observer?: Obs) => {
-      $readyToRun.subscribe(commonObserver)
-      return $readyToRun.subscribe(observer).unsubscribe
+    
+    return (obs?: Obs) => {
+      const subject = new Subject<TaskState>()
+      subject.subscribe(commonObserver)
+      // 如果有配置回调对象 进行挂载
+      obs && subject.subscribe(obs)
+      // TODO: 取消cancel功能
+      this.cacheRunner
+        .run(task)
+        .subscribe(subject)
     }
   }
 
@@ -149,7 +145,7 @@ export interface TaskState {
   // 源数据
   data: unknown
   // 获取数据的时间戳(初始化状态时事件为null)
-  time: number | null
+  lastUpdated: number | null
   // 
 }
 

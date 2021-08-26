@@ -1,4 +1,4 @@
-import { Task, Tasker } from "./Tasker"
+import { Task, Tasker, TaskState } from "./Tasker"
 
 const mockTasks: Task[] = [
   {
@@ -29,7 +29,7 @@ describe('Tasker', () => {
   test('`takeAsCache`正确执行任务', done => {
     const tasker = Tasker
       .fromTasks(mockTasks)
-      .regist(['TEST_1', 'TEST_2'])
+      .regist(['TEST_1'])
     
     tasker.mountObserver({
       next: state => {
@@ -38,18 +38,24 @@ describe('Tasker', () => {
         done()
       }
     })
-      // .onSuccess(state => {
-      //   expect(state.name).toEqual('TEST_1')
-      //   expect((state.data as number[]).length).toEqual(3)
-      //   done()
-      // })
-    const run1 = tasker
-      .takeAsCache('TEST_2')
-    run1()
-    const run2 = tasker
+    const run = tasker
       .takeAsCache('TEST_1')
-    run2()
+    run()
     const states = tasker.getTasksState(['TEST_1'])
     expect(states.length).toEqual(1)
+  })
+  test('`takeAsCache`的返回函数可配置观察者', (done) => {
+    const tasker = Tasker
+      .fromTasks(mockTasks)
+      .regist(['TEST_1'])
+    const ob = {
+      next (state: TaskState) {
+        expect(Array.isArray(state.data)).toBeTruthy()
+        expect((state.data as Array<number>).length).toEqual(3)
+        done()
+      }
+    }
+    tasker
+      .takeAsCache('TEST_1')(ob)
   })
 })

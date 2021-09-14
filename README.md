@@ -49,7 +49,7 @@
 
 ## TODO:
 - `Tree`增加`update`方法 传入数组对整棵树进行动态更新
-- 增加`Tasker`组件
+- 移植`SWR`功能
 
 ## changelog
 - 0.1.4

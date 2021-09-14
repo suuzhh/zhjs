@@ -10,6 +10,6 @@ class SWR {
 
   static useSWRHandler = (_key: Key) => {
     const swr = SWR.instance || new SWR({})
-    const [key, fnArgs, keyErr, keyValidating] = serialize(_key)
+    // const [key, fnArgs, keyErr, keyValidating] = serialize(_key)
   }
 }

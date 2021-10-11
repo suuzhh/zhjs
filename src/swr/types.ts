@@ -6,15 +6,14 @@ export interface InternalConfiguration {
 
 export interface PublicConfiguration<
   Data = any,
-  Fn extends Fetcher<Data> = Fetcher<Data>
 > {
-  fetcher?: Fn
+  fallbackData?: Data
+  fetcher?: Fetcher<Data>
 }
 
 export type SWRConfiguration<
   Data = any,
-  Fn extends Fetcher<Data> = Fetcher<Data>
-> = Partial<PublicConfiguration<Data, Fn>>
+> = Partial<PublicConfiguration<Data>>
 
 export type ValueKey = string | any[] | null
 export type Key = ValueKey | (() => ValueKey)

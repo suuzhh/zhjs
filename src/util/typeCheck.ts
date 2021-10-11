@@ -30,8 +30,14 @@ function isEmpty (param: any) {
   return param === undefined || param === null
 }
 
-function isFunc (params: unknown) {
+function isFunc (params: unknown): params is Function {
   return typeof params === 'function'
+}
+
+const noop = () => {}
+const UNDEFINED: undefined = (/*#__NOINLINE__*/ noop()) as undefined
+function isUndefined (params: unknown): params is undefined {
+  return params === UNDEFINED
 }
 
 export {
@@ -39,5 +45,6 @@ export {
   isArray,
   isNumber,
   isString,
-  isFunc
+  isFunc,
+  isUndefined
 }

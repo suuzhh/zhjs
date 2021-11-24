@@ -69,3 +69,5 @@
 - 0.1.9
   增加`Tree`模块的单元测试
   增加`Tasker`类
+  增加`FileSelector.dispose`手动释放内存的方法
+  修复`FileSelector`类取消弹窗事件无法触发的问题

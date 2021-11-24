@@ -33,6 +33,6 @@
   },
   "dependencies": {
     "rxjs": "^7.3.0",
-    "umi-request": "^1.4.0"
+    "umi-request": "^1.2.3"
   }
 }

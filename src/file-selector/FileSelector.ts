@@ -15,6 +15,10 @@ export class FileSelector {
   private innerOption: RealFileSelectorOption;
   private onSelect: Function | undefined = undefined
   private onError: Function | undefined = undefined
+  // 屏幕是否锁定为文件选择弹窗
+  private isLock = false
+  // 文件列表
+  private fileList: File[] = []
 
   constructor (option?: FileSelectorOption) {
     this.innerOption = Object.assign({}, DEFAULT_OPTION, option)
@@ -23,6 +27,31 @@ export class FileSelector {
 
     this.input.addEventListener('change', this.selectEvent)
     this.input.addEventListener('error', this.errorEvent)
+    this.input.addEventListener('click', this.handleStart)
+    
+  }
+
+  // 文件选择弹窗关闭的回调
+  private handleDialogClosed = () => {
+    // FIXED: focus事件先于change事件完成， 需要增加定时器延时执行以保证其在change事件后触发 
+    setTimeout(() => {
+      if (!this.isLock) return
+      this.isLock = false
+      if (this.fileList.length === 0) {
+        this.onError && this.onError(new Error('取消选择'))
+      }
+      // reset input
+      this.input && (this.input.value = '')
+      this.fileList.length = 0
+    }, 100)
+  }
+
+  private handleStart = () => {
+    if (!this.isLock) {
+      this.isLock = true
+      // 在进入的时候挂载结束事件 并只执行一次
+      window.addEventListener('focus', this.handleDialogClosed, { once: true })
+    }
   }
 
   private parseOption (opt: RealFileSelectorOption) {
@@ -38,14 +67,22 @@ export class FileSelector {
 
   private selectEvent = () => {
     if (this.input && this.input.files && this.input.files.length > 0) {
-      this.onSelect && this.onSelect(Array.from(this.input.files!))
+      this.fileList = Array.from(this.input.files!)
+      this.onSelect && this.onSelect(this.fileList)
     }
-    // reset input
-    this.input && (this.input.value = '')
   }
 
   private errorEvent = (e: ErrorEvent) => {
     this.onError && this.onError(e)
+  }
+
+  /**
+   * 手动释放内存
+   */
+  dispose () {
+    this.input.removeEventListener('change', this.selectEvent)
+    this.input.removeEventListener('error', this.errorEvent)
+    this.input.removeEventListener('click', this.handleStart)
   }
 
   openFileDialog (option?: FileSelectorOption): Promise<File[]> {

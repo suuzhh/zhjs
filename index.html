@@ -7,7 +7,7 @@
   <title>zhjs</title>
 </head>
 <body>
-  npm publish --registry http://registry.npmjs.org
+  npm publish --registry https://registry.npmjs.org
   <button id="btn" type="button">选择文件</button>
   <script src="./dist/zhjs.iife.js"></script>
   <script>
@@ -23,6 +23,9 @@
         selector.openFileDialog()
           .then(files => {
             console.log(files)
+            setTimeout(() => {
+              console.log(files)
+            }, 1000)
           })
       })
     const arr = [

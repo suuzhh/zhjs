@@ -71,3 +71,4 @@
   增加`Tasker`类
   增加`FileSelector.dispose`手动释放内存的方法
   修复`FileSelector`类取消弹窗事件无法触发的问题
+  修复`FileSelector.openFileDialog`返回的文件对象延迟之后被释放的问题

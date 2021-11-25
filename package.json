@@ -1,6 +1,6 @@
 {
   "name": "zhjs",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "",
   "main": "dist/zhjs.es.js",
   "types": "dist/types/main.d.ts",

@@ -12,7 +12,7 @@ interface RealTreeOption<T> {
 const DEFAULT_OPTION: RealTreeOption<any | { parentId: number, id: number }> = {
   parentProperty: 'parentId',
   customID: 'id',
-  rootID: 0 
+  rootID: 0
 }
 
 export type TreeOption<T> = Partial<RealTreeOption<T>>
@@ -25,7 +25,7 @@ export class Tree<T extends object> {
   private levelMap = new Map<number, TreeNode<T>[]>()
   private nodeMap = new Map<T[keyof T], TreeNode<T>>()
 
-  constructor (array: T[], option?: TreeOption<T>) {
+  constructor(array: T[], option?: TreeOption<T>) {
     this.option = Object.assign({}, DEFAULT_OPTION, option)
     this.checkOption()
     this.origin = array
@@ -33,7 +33,7 @@ export class Tree<T extends object> {
     this.assemble()
   }
 
-  private checkOption () {
+  private checkOption() {
     const { customID, parentProperty, rootID } = this.option
     if (isEmpty(customID) || isEmpty(parentProperty)) {
       throw new Error('`customID`或`parentProperty`未设置')
@@ -49,14 +49,14 @@ export class Tree<T extends object> {
     }
   }
 
-  private initOriginMap () {
+  private initOriginMap() {
     this.originMap.clear()
     const { customID } = this.option
     for (const item of this.origin) {
       const id = item[customID]
       if (this.originMap.has(id)) {
         // WARN: 覆盖重复项，后添加的覆盖之前的
-        console.warn(`数据出现重复,已存在'${customID}'为[${id}]的数据,旧值将被覆盖`)
+        console.warn(`数据出现重复,已存在'${String(customID)}'为[${id}]的数据,旧值将被覆盖`)
       }
       this.originMap.set(id, item)
     }
@@ -65,7 +65,7 @@ export class Tree<T extends object> {
   /**
    * 组装 treeNode对象
    */
-  private assemble () {
+  private assemble() {
     const { customID, parentProperty, rootID } = this.option
     // const rootData = this.originMap.get(rootID)
 
@@ -76,7 +76,7 @@ export class Tree<T extends object> {
       [],
       this.originMap.get(rootID)
     )
-    
+
     const recursive = (pid: T[keyof T], arr: T[] = [], level = 0) => {
       const [match, unmatch] = this.splitArrayByPid(pid, arr)
       const children = []
@@ -101,7 +101,7 @@ export class Tree<T extends object> {
     this.originTree = rootNode
   }
 
-  private setLevelMap (level: number, ...nodes: TreeNode<T>[]) {
+  private setLevelMap(level: number, ...nodes: TreeNode<T>[]) {
     if (this.levelMap.has(level)) {
       const map = this.levelMap.get(level)
       map!.push(...nodes)
@@ -110,7 +110,7 @@ export class Tree<T extends object> {
     }
   }
 
-  private setNodeMap (id: T[keyof T], node: TreeNode<T>) {
+  private setNodeMap(id: T[keyof T], node: TreeNode<T>) {
     this.nodeMap.set(id, node)
   }
 
@@ -120,7 +120,7 @@ export class Tree<T extends object> {
    * @param arr
    * @return {matched, unmatched}
    */
-  private splitArrayByPid (pid: T[keyof T], arr: T[] = []) {
+  private splitArrayByPid(pid: T[keyof T], arr: T[] = []) {
     const { parentProperty } = this.option
     const [match, unmatch]: T[][] = [[], []]
     for (const it of arr) {
@@ -135,11 +135,11 @@ export class Tree<T extends object> {
    * 返回源数组
    * @returns 
    */
-  getArray () {
+  getArray() {
     return this.origin
   }
 
-  getRoot () {
+  getRoot() {
     return this.originTree
   }
   /**
@@ -147,14 +147,14 @@ export class Tree<T extends object> {
    * @param level 
    * @returns 
    */
-  getLevel (level: number) {
-    const trees =  this.levelMap.get(level)
+  getLevel(level: number) {
+    const trees = this.levelMap.get(level)
     return trees || []
   }
   /**
    * 获取指定customID值的节点
    */
-  find (id: T[keyof T]) {
+  find(id: T[keyof T]) {
     return this.nodeMap.get(id)
   }
 
@@ -162,7 +162,7 @@ export class Tree<T extends object> {
    * 对node.children排序
    * 内部使用Array.sort
    */
-  sort (compareFn?: (a: TreeNode<T>, b: TreeNode<T>) => number) {
+  sort(compareFn?: (a: TreeNode<T>, b: TreeNode<T>) => number) {
     const recursion = (children: TreeNode<T>[]) => {
       if (children.length > 0) {
         children.sort(compareFn)
@@ -177,35 +177,35 @@ export class Tree<T extends object> {
 }
 
 export class TreeNode<T> {
-  constructor (
+  constructor(
     readonly id: T[keyof T],
     readonly pid?: T[keyof T],
     readonly level: number = 0,
     public children: TreeNode<T>[] = [],
     public readonly data: T | null = null,
-  ) {}
+  ) { }
 
   /**
    * 是否叶子节点
    */
-  get isLeafNode () {
+  get isLeafNode() {
     return this.children.length === 0
   }
 
   /**
    * 是否根节点
    */
-  get isRootNode () {
+  get isRootNode() {
     return isEmpty(this.pid)
   }
 
-  get size (): number {
+  get size(): number {
     return this.children.reduce((w, c) => {
       return w + c.size
     }, 1)
   }
 
-  findNode (id: any): TreeNode<T> | null {
+  findNode(id: any): TreeNode<T> | null {
     if (isEmpty(id)) {
       return null
     }
@@ -224,7 +224,7 @@ export class TreeNode<T> {
   /**
    * 打平树，返回列表结构的TreeNode
    */
-  flat () {
+  flat() {
     const nodes: TreeNode<T>[] = []
     const rec = (node: TreeNode<T>) => {
       nodes.push(node)

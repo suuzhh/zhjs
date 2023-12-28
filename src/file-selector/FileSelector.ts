@@ -37,12 +37,12 @@ export class FileSelector {
     setTimeout(() => {
       if (!this.isLock) return
       this.isLock = false
-      if (this.fileList.length === 0) {
+      if (this.input.files?.length === 0) {
         this.onError && this.onError(new Error('取消选择'))
       }
       // reset input
       this.input && (this.input.value = '')
-      this.fileList.length = 0
+      // this.fileList.length = 0
     }, 100)
   }
 

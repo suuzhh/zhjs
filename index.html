@@ -1,59 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>zhjs</title>
-</head>
-<body>
-  npm publish --registry https://registry.npmjs.org
-  <button id="btn" type="button">选择文件</button>
-  <script src="./dist/zhjs.iife.js"></script>
-  <script>
-    console.log(zhjs)
-    const selector = zhjs.useFileSelector({
-      multiple: true,
-      // 参考 https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input/file#accept
-      accept: '.jpg,.png'
-    })
-    document
-      .getElementById('btn')
-      .addEventListener('click', () => {
-        selector.openFileDialog()
-          .then(files => {
-            console.log(files)
-            setTimeout(() => {
-              console.log(files)
-            }, 1000)
-          })
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zhjs</title>
+  </head>
+
+  <body>
+    npm publish --registry https://registry.npmjs.org
+    <button id="btn" type="button">选择文件</button>
+    <script src="./dist/zhjs.iife.js"></script>
+    <script src="./dist/zhjs_array.iife.js"></script>
+    <script>
+      console.log(zhjs)
+      console.log(zhjs_array)
+      const selector = zhjs.useFileSelector({
+        multiple: true,
+        // 参考 https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input/file#accept
+        accept: '.jpg,.png'
       })
-    const arr = [
-      { id: 10, pid: 9 },
-      { id: 9, pid: 5 },
-      { id: 8, pid: 5 },
-      { id: 7, pid: 2 },
-      { id: 6, pid: 1 },
-      { id: 5, pid: 1 },
-      { id: 4, pid: 1 },
-      { id: 3, pid: 0 },
-      { id: 2, pid: 0 },
-      { id: 1, pid: 0 },
-      { id: 0, pid: null }
-    ]
-    const tree = zhjs.arrayToTree(arr, { parentProperty: 'pid', rootID: 5 })
-    // getRootNode
-    console.log(tree.getRoot())
-    // getLevelChildren
-    console.log(tree.getLevel(0))
-    // output 1 2 3
-    console.log(tree.find(9))
-    // output { id: 9, pid: 5 }
-    console.log(tree.sort((a, b) => a.id - b.id))
-    // sort by node.id, from low to height
-    console.log(tree.getRoot().flat())
-    // return flat tree nodes array
-    
-  </script>
-</body>
+      document
+        .getElementById('btn')
+        .addEventListener('click', () => {
+          selector.openFileDialog()
+            .then(files => {
+              console.log(files)
+              setTimeout(() => {
+                console.log(files)
+              }, 1000)
+            })
+        })
+      const arr = [
+        { id: 10, pid: 9 },
+        { id: 9, pid: 5 },
+        { id: 8, pid: 5 },
+        { id: 7, pid: 2 },
+        { id: 6, pid: 1 },
+        { id: 5, pid: 1 },
+        { id: 4, pid: 1 },
+        { id: 3, pid: 0 },
+        { id: 2, pid: 0 },
+        { id: 1, pid: 0 },
+        { id: 0, pid: null }
+      ]
+      const tree = zhjs.arrayToTree(arr, { parentProperty: 'pid', rootID: 5 })
+      // getRootNode
+      console.log(tree.getRoot())
+      // getLevelChildren
+      console.log(tree.getLevel(0))
+      // output 1 2 3
+      console.log(tree.find(9))
+      // output { id: 9, pid: 5 }
+      console.log(tree.sort((a, b) => a.id - b.id))
+      // sort by node.id, from low to height
+      console.log(tree.getRoot().flat())
+      // return flat tree nodes array
+
+    </script>
+  </body>
+
 </html>

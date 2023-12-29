@@ -28,7 +28,7 @@ export class FileSelector {
     this.input.addEventListener('change', this.selectEvent)
     this.input.addEventListener('error', this.errorEvent)
     this.input.addEventListener('click', this.handleStart)
-    
+
   }
 
   // 文件选择弹窗关闭的回调
@@ -61,7 +61,7 @@ export class FileSelector {
     //   this.input.removeAttribute('multiple')
     // }
     this.input.multiple = Boolean(opt.multiple)
-    
+
     this.input.accept = opt.accept
   }
 

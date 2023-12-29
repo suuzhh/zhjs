@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["Tasker", "zhjs"]
+  "cSpell.words": ["Tasker", "zhjs"],
+  "cSpell.files": ["./src/**"]
 }

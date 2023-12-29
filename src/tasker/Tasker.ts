@@ -53,7 +53,7 @@ export class Tasker {
    * 根据传入的任务名称返回任务当前的状态
    * 未注册的状态不会被获取
    * @param {string[]} names 任务名称
-   * @returns 
+   * @returns
    */
   getTasksState (names: string[]): TaskState[] {
     return names.reduce<TaskState[]>((states, name) => {

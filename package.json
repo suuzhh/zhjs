@@ -43,7 +43,8 @@
     "build": "rollup -c",
     "dev": "rollup -w -c",
     "test": "jest",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "postbuild": ""
   },
   "repository": {
     "type": "git",

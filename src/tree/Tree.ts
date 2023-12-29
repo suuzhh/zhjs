@@ -1,6 +1,9 @@
 import { isEmpty, isString } from '../util/typeCheck'
 
-interface RealTreeOption<T> {
+/**
+ * @public
+ */
+export interface TreeOption<T> {
   // 关联父节点`customID`值的字段名称 默认为`parentId`
   parentProperty: keyof T;
   // 节点唯一标识 默认为`id`
@@ -9,23 +12,24 @@ interface RealTreeOption<T> {
   rootID: T[keyof T]
 }
 
-const DEFAULT_OPTION: RealTreeOption<any | { parentId: number, id: number }> = {
+const DEFAULT_OPTION: TreeOption<any | { parentId: number, id: number }> = {
   parentProperty: 'parentId',
   customID: 'id',
   rootID: 0
 }
 
-export type TreeOption<T> = Partial<RealTreeOption<T>>
-
+/**
+ * @public
+ */
 export class Tree<T extends object> {
-  private option: RealTreeOption<T>;
+  private option: TreeOption<T>;
   private origin: T[]
   private originMap = new Map<any, T>()
   private originTree: TreeNode<T> | undefined;
   private levelMap = new Map<number, TreeNode<T>[]>()
   private nodeMap = new Map<T[keyof T], TreeNode<T>>()
 
-  constructor(array: T[], option?: TreeOption<T>) {
+  constructor(array: T[], option?: Partial<TreeOption<T>>) {
     this.option = Object.assign({}, DEFAULT_OPTION, option)
     this.checkOption()
     this.origin = array
@@ -116,9 +120,8 @@ export class Tree<T extends object> {
 
   /**
    * 根据pid 将给定的数组切分为二个子数组
-   * @param pid 
-   * @param arr
-   * @return {matched, unmatched}
+   * @param pid - 父节点id
+   * @param arr - 树节点数组
    */
   private splitArrayByPid(pid: T[keyof T], arr: T[] = []) {
     const { parentProperty } = this.option
@@ -144,8 +147,7 @@ export class Tree<T extends object> {
   }
   /**
    * 获取对应层级的节点数据
-   * @param level 
-   * @returns 
+   * @param level - 层级
    */
   getLevel(level: number) {
     const trees = this.levelMap.get(level)
@@ -176,6 +178,9 @@ export class Tree<T extends object> {
   }
 }
 
+/**
+ * @public
+ */
 export class TreeNode<T> {
   constructor(
     readonly id: T[keyof T],

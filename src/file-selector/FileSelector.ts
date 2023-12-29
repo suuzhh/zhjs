@@ -1,18 +1,22 @@
-interface RealFileSelectorOption {
+/**
+ * @public
+ */
+export interface FileSelectorOption {
   multiple: boolean;
   accept: string;
 }
 
-export type FileSelectorOption = Partial<RealFileSelectorOption>
-
-const DEFAULT_OPTION: RealFileSelectorOption = {
+const DEFAULT_OPTION: FileSelectorOption = {
   multiple: false,
   accept: ''
 }
 
+/**
+ * @public
+ */
 export class FileSelector {
   private input: HTMLInputElement;
-  private innerOption: RealFileSelectorOption;
+  private innerOption: FileSelectorOption;
   private onSelect: Function | undefined = undefined
   private onError: Function | undefined = undefined
   // 屏幕是否锁定为文件选择弹窗
@@ -20,7 +24,7 @@ export class FileSelector {
   // 文件列表
   private fileList: File[] = []
 
-  constructor (option?: FileSelectorOption) {
+  constructor(option?: Partial<FileSelectorOption>) {
     this.innerOption = Object.assign({}, DEFAULT_OPTION, option)
     this.input = document.createElement('input')
     this.input.setAttribute('type', 'file')
@@ -54,7 +58,7 @@ export class FileSelector {
     }
   }
 
-  private parseOption (opt: RealFileSelectorOption) {
+  private parseOption(opt: FileSelectorOption) {
     // if (opt.multiple) {
     //   this.input.setAttribute('multiple', 'multiple')
     // } else {
@@ -79,13 +83,13 @@ export class FileSelector {
   /**
    * 手动释放内存
    */
-  dispose () {
+  dispose() {
     this.input.removeEventListener('change', this.selectEvent)
     this.input.removeEventListener('error', this.errorEvent)
     this.input.removeEventListener('click', this.handleStart)
   }
 
-  openFileDialog (option?: FileSelectorOption): Promise<File[]> {
+  openFileDialog(option?: FileSelectorOption): Promise<File[]> {
     const opt = Object.assign({}, this.innerOption, option)
     this.parseOption(opt)
 

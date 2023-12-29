@@ -47,9 +47,22 @@
   // return flat tree nodes array
 ```
 
+## array工具方法
+
+>  `iife`模式下工具方法被挂载在全局`zhjs_array`变量上。
+
+
+- `zip` 创建一个分组元素数组，其中第一个包含给定数组的第一个元素，第二个包含给定数组的第二个元素，依此类推。
+```js
+import { zip } from 'zhjs/array';
+
+zip(['a', 'b'], [1, 2], [true, false]);
+// => [['a', 1, true], ['b', 2, false]]
+```
+
+
 ## TODO:
 - `Tree`增加`update`方法 传入数组对整棵树进行动态更新
-- 移植`ahook.useRequest`部分功能
 
 ## changelog
 - 0.1.4

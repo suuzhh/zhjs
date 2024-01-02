@@ -2,7 +2,7 @@
  * 判断入参是否为字符串类型
  * @param {any} param
  */
-function isString(param: any): boolean {
+function isString(param: any): param is boolean {
   return typeof param === "string";
 }
 
@@ -10,7 +10,7 @@ function isString(param: any): boolean {
  * 判断入参是否为数字类型
  * @param {any} param
  */
-function isNumber(param: any) {
+function isNumber(param: any): param is number {
   return typeof param === "number";
 }
 
@@ -18,7 +18,7 @@ function isNumber(param: any) {
  * 判断入参是否为数组类型
  * @param {any} param
  */
-function isArray(param: any) {
+function isArray(param: any): param is Array<any> {
   return Array.isArray(param);
 }
 
@@ -35,7 +35,7 @@ function isFunc(params: unknown): params is Function {
 }
 
 const noop = () => {};
-const UNDEFINED: undefined = /*#__NOINLINE__*/ noop() as undefined;
+const UNDEFINED: undefined = noop() as undefined;
 function isUndefined(params: unknown): params is undefined {
   return params === UNDEFINED;
 }

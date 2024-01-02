@@ -12,11 +12,12 @@ function outputMain(...formats) {
   const mainDevPath = "src/main.ts";
 
   return formats.map((format) => {
+    const extension = ["module", "es", "esm"].includes(format) ? 'mjs' : 'js';
     return {
       input: mainDevPath,
       output: {
         name: "zhjs",
-        file: `dist/zhjs.${format}.js`,
+        file: `dist/zhjs.${format}.${extension}`,
         format,
       },
       plugins: [
@@ -43,11 +44,12 @@ function outputArrayFolder(...formats) {
   const mainDevPath = "src/array/index.ts";
 
   return formats.map((format) => {
+    const extension = ["module", "es", "esm"].includes(format) ? 'mjs' : 'js';
     return {
       input: mainDevPath,
       output: {
         name: "zhjs_array",
-        file: `dist/zhjs_array.${format}.js`,
+        file: `dist/zhjs_array.${format}.${extension}`,
         format,
       },
       plugins: [

@@ -3,18 +3,27 @@
   "version": "0.1.10",
   "description": "",
   "type": "module",
-  "main": "dist/zhjs.es.js",
+  "main": "dist/zhjs.es.mjs",
   "types": "dist/types/zhjs.d.ts",
   "typings": "dist/types/zhjs.d.ts",
+  "module": "dist/zhjs.es.mjs",
+  "typesVersions": {
+    "*": {
+      "array": [
+        "./dist/types/array/index.d.ts"
+      ]
+    }
+  },
   "exports": {
+    "./package.json": "./package.json",
     ".": {
       "import": {
         "types": "./dist/types/zhjs.d.ts",
-        "default": "./dist/zhjs.es.js"
+        "default": "./dist/zhjs.es.mjs"
       },
       "module": {
         "types": "./dist/types/zhjs.d.ts",
-        "default": "./dist/zhjs.es.js"
+        "default": "./dist/zhjs.es.mjs"
       },
       "default": {
         "types": "./dist/types/zhjs.d.ts",
@@ -22,18 +31,12 @@
       }
     },
     "./array": {
+      "types": "./dist/types/array/index.d.ts",
       "import": {
         "types": "./dist/types/array/index.d.ts",
-        "default": "./dist/dist/zhjs_array.es.js"
+        "default": "./dist/zhjs_array.es.mjs"
       },
-      "module": {
-        "types": "./dist/types/array/index.d.ts",
-        "default": "./dist/dist/zhjs_array.es.js"
-      },
-      "default": {
-        "types": "./dist/types/array/index.d.ts",
-        "default": "./dist/zhjs_array.umd.js"
-      }
+      "default": "./dist/zhjs_array.umd.js"
     }
   },
   "files": [

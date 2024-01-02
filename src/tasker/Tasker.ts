@@ -4,7 +4,14 @@ import { Observer, Subject } from 'rxjs'
 
 let obIndex = 0
 
-type Obs = Partial<Observer<TaskState>> // | ((value: TaskState) => void)
+/**
+ * @public
+ */
+export type Obs = Partial<Observer<TaskState>> // | ((value: TaskState) => void)
+
+/**
+ * @public
+ */
 export class Tasker {
   private taskMap = new Map<string, Task>()
 
@@ -15,14 +22,14 @@ export class Tasker {
   // 数据状态
   private registedStateMap = new Map<string, TaskState>()
 
-  private constructor (tasks: Task[], config?: Partial<RunnerConfig>) {
+  private constructor(tasks: Task[], config?: Partial<RunnerConfig>) {
     tasks.forEach(task => {
       this.taskMap.set(task.name, task);
     })
     this.cacheRunner = new CacheRunner(config)
   }
 
-  private dispatchSuccess (state: TaskState) {
+  private dispatchSuccess(state: TaskState) {
     this.observerMap.forEach(ob => {
       ob.next && ob.next(state)
     })
@@ -30,7 +37,7 @@ export class Tasker {
     this.registedStateMap.set(state.name, state)
   }
 
-  regist (names: string[]) {
+  regist(names: string[]) {
     names.forEach(name => {
       if (!this.registedStateMap.has(name)) {
         const task = this.taskMap.get(name)
@@ -52,10 +59,10 @@ export class Tasker {
   /**
    * 根据传入的任务名称返回任务当前的状态
    * 未注册的状态不会被获取
-   * @param {string[]} names 任务名称
-   * @returns 
+   * @param names - 任务名称
+   * @returns
    */
-  getTasksState (names: string[]): TaskState[] {
+  getTasksState(names: string[]): TaskState[] {
     return names.reduce<TaskState[]>((states, name) => {
       const state = this.registedStateMap.get(name)
       if (state) {
@@ -65,7 +72,7 @@ export class Tasker {
     }, [])
   }
 
-  takeAsCache (taskName: string) {
+  takeAsCache(taskName: string) {
     const task = this.taskMap.get(taskName)
     if (!task) {
       throw new Error(`Task ${taskName} 未定义`)
@@ -76,7 +83,7 @@ export class Tasker {
         this.dispatchSuccess(state)
       }
     }
-    
+
     return (obs?: Obs) => {
       const subject = new Subject<TaskState>()
       subject.subscribe(commonObserver)
@@ -90,43 +97,45 @@ export class Tasker {
   }
 
   /**
-   *  TODO:
-   * @param taskName
+   *  TODO
    */
-  taskAsOnce (taskName: string) {
+  taskAsOnce(taskName: string) {
 
   }
   /**
-   *  TODO:
-   * @param taskName
+   *  TODO
    */
-  takeAsUnique (taskName: string) {
+  takeAsUnique(taskName: string) {
 
   }
 
   /**
    * 清空所有任务（不清空任务配置列表）
    */
-  clear () {
+  clear() {
     this.cacheRunner.clear()
     this.registedStateMap.clear()
   }
 
-  mountObserver (ob: Obs) {
+  mountObserver(ob: Obs) {
     const map = this.observerMap
     const index = ++obIndex
     map.set(index, ob)
 
-    return function unMountObserver () {
+    return function unMountObserver() {
       map.delete(index)
     }
   }
 
-  static fromTasks (tasks: Task[]) {
+  static fromTasks(tasks: Task[]) {
     return new Tasker(tasks)
   }
 }
 
+
+/**
+ * @public
+ */
 export interface Task {
   name: string,
   model: {
@@ -139,6 +148,9 @@ export interface Task {
   }
 }
 
+/**
+ * @public
+ */
 export interface TaskState {
   // 任务名称
   name: string,
@@ -146,6 +158,5 @@ export interface TaskState {
   data: unknown
   // 获取数据的时间戳(初始化状态时事件为null)
   lastUpdated: number | null
-  // 
 }
 

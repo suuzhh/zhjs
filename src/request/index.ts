@@ -1,16 +1,12 @@
-import { PromiseFn } from './types'
+import { PromiseFn } from "./types";
 
-class Fetcher<R, P extends any[]>{
+class Fetcher<R, P extends any[]> {
   constructor(
     fn: PromiseFn<P, R>,
-    subscribe: any // TODO: useAsync 68 行
+    subscribe: any, // TODO: useAsync 68 行
   ) {}
 }
 
-function request <P extends any[], R>(
-  fn: PromiseFn<P, R>
-) {
+function request<P extends any[], R>(fn: PromiseFn<P, R>) {}
 
-}
-
-export default request
+export default request;

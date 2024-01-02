@@ -1,4 +1,8 @@
 {
   "cSpell.words": ["Tasker", "zhjs"],
-  "cSpell.files": ["./src/**"]
+  "cSpell.files": ["./src/**"],
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
 }

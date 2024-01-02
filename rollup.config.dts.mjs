@@ -1,5 +1,4 @@
-import { dts } from 'rollup-plugin-dts';
-
+import { dts } from "rollup-plugin-dts";
 
 /**
  * @returns {import('rollup').RollupOptions}
@@ -9,10 +8,10 @@ function createMainConfig() {
     input: `./_temp/types/main.d.ts`,
     output: {
       file: `dist/types/zhjs.d.ts`,
-      format: 'es',
+      format: "es",
     },
-    plugins: [dts()]
-  }
+    plugins: [dts()],
+  };
 }
 
 /**
@@ -23,13 +22,13 @@ function createArrayConfig() {
     input: `./_temp/types/array/index.d.ts`,
     output: {
       file: `dist/types/array/index.d.ts`,
-      format: 'es',
+      format: "es",
     },
-    plugins: [dts()]
-  }
+    plugins: [dts()],
+  };
 }
 
 /**
  * @type {import('rollup').RollupOptions}
  */
-export default [createMainConfig(), createArrayConfig()]
+export default [createMainConfig(), createArrayConfig()];

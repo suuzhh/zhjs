@@ -20,7 +20,7 @@ export function zip(...arrays: unknown[][]): Array<unknown[]> {
   let length = 0;
 
   // 过滤掉不是原生数组的对象
-  const nativeArrays = arrays.filter(array => {
+  const nativeArrays = arrays.filter((array) => {
     if (Array.isArray(array)) {
       length = Math.max(length, array.length);
       return true;
@@ -31,10 +31,8 @@ export function zip(...arrays: unknown[][]): Array<unknown[]> {
   const result = new Array<unknown[]>(length);
 
   while (++index < length) {
-    result[index] =
-      nativeArrays.map(array => array[index]);
+    result[index] = nativeArrays.map((array) => array[index]);
   }
-
 
   return result;
 }

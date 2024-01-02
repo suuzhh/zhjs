@@ -62,52 +62,6 @@ function outputArrayFolder(...formats) {
 }
 
 /**
- * 创建类型文件输出
- * @returns {import('rollup').RollupOptions}
- */
-function outputDeclaration() {
-  const mainDevPath = 'src/main.ts';
-  const outputDir = 'dist/types';
-  return [
-    {
-      input: mainDevPath,
-      output: {
-        dir: outputDir,
-      },
-      plugins: [
-        typescript({
-          // useTsconfigDeclarationDir: true,
-          // tsconfigOverride: {
-          //   compilerOptions: {
-          //     target: 'ESNEXT',
-          //     module: 'ESNEXT',
-          //     "lib": [
-          //       "ES2015",
-          //       "DOM"
-          //     ],
-          //     typeRoots: [
-          //       "./node_modules/@types"
-          //     ],
-          //     esModuleInterop: true,
-          //     moduleResolution: 'node',
-          //     forceConsistentCasingInFileNames: true,
-          //     skipLibCheck: true,
-          //     declaration: true,
-          //     emitDeclarationOnly: true
-          //   }
-          // }
-          declaration: true,
-          emitDeclarationOnly: true,
-          declarationDir: outputDir,
-          // outDir: outputDir,
-        })
-      ]
-    }
-  ]
-
-}
-
-/**
  * @type {import('rollup').RollupOptions}
  */
 export default [

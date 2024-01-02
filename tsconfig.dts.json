@@ -1,11 +1,9 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
     "declaration": true,
     "emitDeclarationOnly": true,
     "declarationDir": "_temp/types",
-    "skipLibCheck": true,
-    "moduleResolution": "NodeNext"
-  }
+  },
+  "exclude": ["./src/**/*.test.ts"]
 }

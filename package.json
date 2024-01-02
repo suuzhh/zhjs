@@ -2,6 +2,7 @@
   "name": "zhjs",
   "version": "0.1.10",
   "description": "",
+  "type": "module",
   "main": "dist/zhjs.es.js",
   "types": "dist/types/zhjs.d.ts",
   "typings": "dist/types/zhjs.d.ts",
@@ -41,7 +42,7 @@
   ],
   "scripts": {
     "_clean": "rimraf dist",
-    "_build:dts": "tsc --project tsconfig.dts.json && api-extractor run --local --verbose && rimraf _temp",
+    "_build:dts": "tsc -p tsconfig.dts.json && rollup -c rollup.config.dts.mjs && rimraf _temp",
     "build": "rollup -c",
     "dev": "rollup -w -c",
     "test": "jest",
@@ -63,7 +64,6 @@
   },
   "homepage": "https://github.com/SuZHui/zhjs#readme",
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.39.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
@@ -72,6 +72,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "rimraf": "^5.0.5",
     "rollup": "^4.9.1",
+    "rollup-plugin-dts": "^6.1.0",
     "ts-jest": "^29.1.1",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3"

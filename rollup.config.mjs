@@ -1,7 +1,6 @@
-import typescript from '@rollup/plugin-typescript';
-import terser from '@rollup/plugin-terser';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-
+import typescript from "@rollup/plugin-typescript";
+import terser from "@rollup/plugin-terser";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 
 /**
  * 创建main目录的输出
@@ -10,26 +9,28 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
  * @returns {import('rollup').RollupOptions}
  */
 function outputMain(...formats) {
-  const mainDevPath = 'src/main.ts';
+  const mainDevPath = "src/main.ts";
 
-  return formats.map(format => {
+  return formats.map((format) => {
     return {
       input: mainDevPath,
       output: {
-        name: 'zhjs',
+        name: "zhjs",
         file: `dist/zhjs.${format}.js`,
-        format
+        format,
       },
       plugins: [
         typescript({
-          target: ['module', 'es', 'esm'].includes(format) ? 'ESNEXT' : 'ES2015',
+          target: ["module", "es", "esm"].includes(format)
+            ? "ESNEXT"
+            : "ES2015",
           declaration: false,
         }),
         nodeResolve(),
-        terser()
-      ]
-    }
-  })
+        terser(),
+      ],
+    };
+  });
 }
 
 /**
@@ -39,32 +40,34 @@ function outputMain(...formats) {
  * @returns {import('rollup').RollupOptions}
  */
 function outputArrayFolder(...formats) {
-  const mainDevPath = 'src/array/index.ts';
+  const mainDevPath = "src/array/index.ts";
 
-  return formats.map(format => {
+  return formats.map((format) => {
     return {
       input: mainDevPath,
       output: {
-        name: 'zhjs_array',
+        name: "zhjs_array",
         file: `dist/zhjs_array.${format}.js`,
-        format
+        format,
       },
       plugins: [
         typescript({
-          target: ['module', 'es', 'esm'].includes(format) ? 'ESNEXT' : 'ES2015',
+          target: ["module", "es", "esm"].includes(format)
+            ? "ESNEXT"
+            : "ES2015",
           declaration: false,
         }),
         nodeResolve(),
-        terser()
-      ]
-    }
-  })
+        terser(),
+      ],
+    };
+  });
 }
 
 /**
  * @type {import('rollup').RollupOptions}
  */
 export default [
-  ...outputMain('es', 'iife', 'umd'),
-  ...outputArrayFolder('es', 'iife', 'umd')
-]
+  ...outputMain("es", "iife", "umd"),
+  ...outputArrayFolder("es", "iife", "umd"),
+];

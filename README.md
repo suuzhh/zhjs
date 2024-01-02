@@ -5,66 +5,68 @@
 使用方法
 
 ```js
-  const selector = zhjs.useFileSelector({
-    multiple: true,
-    // 参考 https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input/file#accept
-    accept: '.jpg,.png'
-  })
-  selector.openFileDialog()
-    .then(files => {
-      // TODO: use files here
-    })
+const selector = zhjs.useFileSelector({
+  multiple: true,
+  // 参考 https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input/file#accept
+  accept: ".jpg,.png",
+});
+selector.openFileDialog().then((files) => {
+  // TODO: use files here
+});
 ```
 
 ## 数组转树
+
 使用方法
+
 ```js
-  const arr = [
-    { id: 10, pid: 9 },
-    { id: 9, pid: 5 },
-    { id: 8, pid: 5 },
-    { id: 7, pid: 2 },
-    { id: 6, pid: 1 },
-    { id: 5, pid: 1 },
-    { id: 4, pid: 1 },
-    { id: 3, pid: 0 },
-    { id: 2, pid: 0 },
-    { id: 1, pid: 0 },
-    { id: 0, pid: null }
-  ]
-  // output: 树形结构
-  const tree = zhjs.arrayToTree(arr, { parentProperty: 'pid' })
-  // getRootNode
-  console.log(tree.getRoot())
-  // getLevelChildren
-  console.log(tree.getLevel(1))
-  // output 1 2 3
-  console.log(tree.find(9))
-  // output { id: 9, pid: 5 }
-  console.log(tree.sort((a, b) => a.id - b.id))
-  // sort by node.id, from low to height
-  console.log(tree.getRoot().flat())
-  // return flat tree nodes array
+const arr = [
+  { id: 10, pid: 9 },
+  { id: 9, pid: 5 },
+  { id: 8, pid: 5 },
+  { id: 7, pid: 2 },
+  { id: 6, pid: 1 },
+  { id: 5, pid: 1 },
+  { id: 4, pid: 1 },
+  { id: 3, pid: 0 },
+  { id: 2, pid: 0 },
+  { id: 1, pid: 0 },
+  { id: 0, pid: null },
+];
+// output: 树形结构
+const tree = zhjs.arrayToTree(arr, { parentProperty: "pid" });
+// getRootNode
+console.log(tree.getRoot());
+// getLevelChildren
+console.log(tree.getLevel(1));
+// output 1 2 3
+console.log(tree.find(9));
+// output { id: 9, pid: 5 }
+console.log(tree.sort((a, b) => a.id - b.id));
+// sort by node.id, from low to height
+console.log(tree.getRoot().flat());
+// return flat tree nodes array
 ```
 
 ## array工具方法
 
->  `iife`模式下工具方法被挂载在全局`zhjs_array`变量上。
-
+> `iife`模式下工具方法被挂载在全局`zhjs_array`变量上。
 
 - `zip` 创建一个分组元素数组，其中第一个包含给定数组的第一个元素，第二个包含给定数组的第二个元素，依此类推。
-```js
-import { zip } from 'zhjs/array';
 
-zip(['a', 'b'], [1, 2], [true, false]);
+```js
+import { zip } from "zhjs/array";
+
+zip(["a", "b"], [1, 2], [true, false]);
 // => [['a', 1, true], ['b', 2, false]]
 ```
 
-
 ## TODO:
+
 - `Tree`增加`update`方法 传入数组对整棵树进行动态更新
 
 ## changelog
+
 - 0.1.4
   修复文件选择器初始化时配置项不生效的问题
 - 0.1.5

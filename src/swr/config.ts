@@ -1,6 +1,3 @@
-import { InternalConfiguration, PublicConfiguration } from './types'
+import { InternalConfiguration, PublicConfiguration } from "./types";
 
-
-export const defaultConfig: InternalConfiguration & PublicConfiguration = {
-
-}
+export const defaultConfig: InternalConfiguration & PublicConfiguration = {};

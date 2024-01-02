@@ -45,7 +45,7 @@
     "build": "rollup -c",
     "dev": "rollup -w -c",
     "test": "jest",
-    "prebuild": "npm run clean",
+    "prebuild": "npm run _clean",
     "postbuild": "npm run _build:dts"
   },
   "repository": {

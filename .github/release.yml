@@ -13,7 +13,7 @@ changelog:
       labels:
         - Semver-Minor
         - enhancement
-    - title: Bug fix 
+    - title: Bug fix 🧯
       labels:
         - bug
     # - title: Other Changes

@@ -1,9 +1,9 @@
 name: deploy docs
 
 on:
-  # workflow_dispatch
-  push:
-    branches: [15-feat-create-docs-for-api]
+  workflow_dispatch
+  # push:
+  #   branches: [15-feat-create-docs-for-api]
 
 permissions:
   contents: write

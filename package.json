@@ -47,11 +47,14 @@
     "_clean": "rimraf dist",
     "_build:dts": "tsc -p tsconfig.dts.json && rollup -c rollup.config.dts.mjs && rimraf _temp",
     "_changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "_release": "npx standard-version",
     "build": "rollup -c",
     "dev": "rollup -w -c",
     "test": "jest",
-    "prebuild": "npm run _clean",
-    "postbuild": "npm run _build:dts"
+    "prebuild": "pnpm run _clean",
+    "postbuild": "pnpm run _build:dts",
+    "release:rc": "pnpm run _release -p rc --dry-run",
+    "release:patch": "pnpm run _release -r patch --dry-run"
   },
   "repository": {
     "type": "git",

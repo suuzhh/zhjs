@@ -1,4 +1,9 @@
-# 前端工具集
+# zhjs
+
+> toolkit for frontend （前端工具集）
+
+> [!IMPORTANT]
+> 原包名为 `zhjs`, 即将在 `0.2.0` 版本之后改为 `h2o`
 
 ## 文件选择器
 

@@ -1,6 +1,7 @@
 {
   "name": "zhjs",
   "version": "0.1.10",
+  "packageManager": "pnpm@8.13.1",
   "description": "",
   "type": "module",
   "main": "dist/zhjs.es.mjs",
@@ -46,11 +47,14 @@
   "scripts": {
     "_clean": "rimraf dist",
     "_build:dts": "tsc -p tsconfig.dts.json && rollup -c rollup.config.dts.mjs && rimraf _temp",
+    "_release": "pnpm run standard-version",
     "build": "rollup -c",
     "dev": "rollup -w -c",
     "test": "jest",
-    "prebuild": "npm run _clean",
-    "postbuild": "npm run _build:dts"
+    "prebuild": "pnpm run _clean",
+    "postbuild": "pnpm run _build:dts",
+    "release:rc": "pnpm run _release -p rc --dry-run",
+    "release:patch": "pnpm run _release -r patch --dry-run"
   },
   "repository": {
     "type": "git",
@@ -77,6 +81,7 @@
     "rimraf": "^5.0.5",
     "rollup": "^4.9.1",
     "rollup-plugin-dts": "^6.1.0",
+    "standard-version": "^9.5.0",
     "ts-jest": "^29.1.1",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3"

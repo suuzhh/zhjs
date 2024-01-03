@@ -7,8 +7,10 @@
 
 ## 如何使用 How to usage
 
-- 文件选择器 fileSelector [查看文档](./docs/modules/main.html#md:文件选择器)
-- 数组转树 arrayToTree [查看文档](./docs/modules/main.html#md:数组转树)
+### [查看文档](https://suzhui.github.io/zhjs)
+
+- 文件选择器 fileSelector [查看文档](https://suzhui.github.io/zhjs/functions/main.useFileSelector.html#useFileSelector)
+- 数组转树 arrayToTree [查看文档](https://suzhui.github.io/zhjs/functions/main.arrayToTree.html#arrayToTree)
 
 ## 文件选择器
 

@@ -1,8 +1,5 @@
 on:
   push:
-    branches:
-      - main
-      - 13-feat-implement-automatic-version-updates
     tags:
       - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
 

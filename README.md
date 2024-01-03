@@ -5,6 +5,11 @@
 > [!IMPORTANT]
 > 原包名为 `zhjs`, 即将在 `0.2.0` 版本之后改为 `h2o`
 
+## 如何使用 How to usage
+
+- 文件选择器 fileSelector [查看文档](./docs/modules/main.html#md:文件选择器)
+- 数组转树 arrayToTree [查看文档](./docs/modules/main.html#md:数组转树)
+
 ## 文件选择器
 
 使用方法

@@ -51,6 +51,7 @@
     "build": "rollup -c",
     "dev": "rollup -w -c",
     "test": "jest",
+    "docs": "typedoc",
     "prebuild": "pnpm run _clean",
     "postbuild": "pnpm run _build:dts",
     "release:rc": "pnpm run _release -p rc --dry-run",

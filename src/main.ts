@@ -1,3 +1,4 @@
+import { from } from "rxjs";
 import {
   type FileSelectorOption,
   FileSelector,
@@ -47,3 +48,5 @@ export function arrayToTree<T extends object>(
 export function useTasker(tasks: Task[]) {
   return Tasker.fromTasks(tasks);
 }
+
+export * from "./mutex";

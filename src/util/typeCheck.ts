@@ -23,7 +23,7 @@ function isArray(param: any): param is Array<any> {
 }
 
 /**
- * 判断入参是否为undefined|null|''
+ * 判断入参是否为undefined|null
  * @param {any} param
  */
 function isEmpty(param: any) {

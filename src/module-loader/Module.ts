@@ -5,7 +5,6 @@ function createScriptNode(url: string, attrs?: Record<string, string>) {
   const script = document.createElement("script");
   script.src = url;
   script.async = true;
-  script;
   if (attrs) for (const attr in attrs) script.setAttribute(attr, attrs[attr]);
   return script;
 }

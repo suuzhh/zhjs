@@ -13,13 +13,12 @@ function createScriptNode(url: string, attrs?: Record<string, string>) {
  */
 export interface Module {
   readonly name: string;
-  readonly deps: string[];
-  readonly url: string;
+  deps: string[];
+  url: string;
   readonly isLoaded: boolean;
 
   load: () => void;
   onLoaded: (cb: Function) => void;
-  
 }
 
 export function createModule(name: string, url: string, deps: string[] = []) {

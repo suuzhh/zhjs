@@ -38,13 +38,24 @@ export class ModuleLoader implements Loader {
   private definedModMap: Map<string, Module>;
 
   /** 未注册的模块暂存 */
-  // private shadowModMap: Map<string, Module>;
+  private shadowModMap: Map<string, Module>;
 
   constructor() {
     this.definedModMap = new Map();
-    // this.shadowModMap = new Map();
+    this.shadowModMap = new Map();
 
     this.dependenciesGraph = new Graph();
+  }
+
+  private createModule(name: string, url: string, deps: string[] = []) {
+    const mod = createModule(name, url, deps);
+
+    // 通知依赖该模块的其它模块
+    mod.onLoaded(() => {
+      this.updateDepsState(name);
+    });
+
+    return mod;
   }
 
   /**
@@ -54,6 +65,11 @@ export class ModuleLoader implements Loader {
   private updateGraph(name: string, deps: string[]) {
     deps.forEach((depName) => {
       this.dependenciesGraph.addEdge(depName, name);
+
+      if (!this.definedModMap.has(depName)) {
+        // 添加未定义依赖
+        this.shadowModMap.set(depName, this.createModule(depName, "", []));
+      }
     });
   }
 
@@ -98,11 +114,24 @@ export class ModuleLoader implements Loader {
     let mod = this.definedModMap.get(name);
 
     if (!mod) {
-      mod = createModule(name, url, deps);
+      mod = this.shadowModMap.get(name);
+      if (mod) {
+        // 之前未定义的依赖 现在要让它变成已定义状态
+        mod.deps = deps;
+        mod.url = url;
+
+        // 从未定义集合中删除
+        this.shadowModMap.delete(name);
+      } else {
+        mod = this.createModule(name, url, deps);
+      }
+
       this.definedModMap.set(name, mod);
     } else {
       console.warn(`${name}模块已存在`);
     }
+
+    if (mod.isLoaded) return;
 
     // 是否存在依赖
     if (deps.length) {
@@ -114,11 +143,6 @@ export class ModuleLoader implements Loader {
       // 没依赖直接可加载自身
       mod.load();
     }
-
-    // 通知依赖该模块的其它模块
-    mod.onLoaded(() => {
-      this.updateDepsState(name);
-    });
   }
 
   /**
@@ -126,66 +150,37 @@ export class ModuleLoader implements Loader {
    * @param deps - 依赖的模块
    */
   require(deps: string[] = []): Promise<void> {
-
-    return 
     const waitPromise: Promise<void>[] = [];
-    //递归查找所有使用到的
-    const depsSet = new Set<string>();
-    const setDeps = (n: string) => {
-      if (depsSet.has(n)) {
-        // 循环依赖 停止
-        return;
-      }
 
-      let m = this.definedModMap.get(n);
-      if (m) {
-        depsSet.add(n);
-        m.deps.forEach(setDeps);
-      }
-      m = this.waitForBeDepsMods.get(n);
-      if (m) {
-        depsSet.add(n);
-        m.deps.forEach(setDeps);
-      }
-    };
-    for (const dep of deps) {
-      setDeps(dep);
-    }
-
-    deps = [...depsSet];
-
-    if (Array.isArray(deps) && deps.length > 0) {
-      for (const dep of deps) {
-        let mod = this.definedModMap.get(dep);
-        if (mod) {
-          // 判断模块是否加载完成
-          if (mod.isLoaded) {
-            // 已完成 不做处理了
-          } else {
-            // 等待加载完成
-            waitPromise.push(new Promise((resolve) => mod!.onLoad(resolve)));
-          }
-        } else {
-          // 在未定义的模块集合中查找
-          mod = this.waitForBeDepsMods.get(dep);
-          if (mod) {
-            // 已存在 需要确认是否加载完成
-            if (!mod?.isLoaded) {
-              waitPromise.push(new Promise((resolve) => mod!.onLoad(resolve)));
-            }
-          } else {
-            // 两个缓存都没有 说明该资源没有被注册或被依赖过 需要往等待队列加入一个新的模块
-            const mod = createModule(dep, "", []);
-            this.waitForBeDepsMods.set(dep, mod);
-            waitPromise.push(new Promise((resolve) => mod.onLoad(resolve)));
-          }
+    deps.forEach((depName) => {
+      let mod = this.definedModMap.get(depName);
+      if (mod) {
+        if (!mod.isLoaded) {
+          waitPromise.push(
+            new Promise<void>((resolve) => {
+              mod!.onLoaded(resolve);
+            }),
+          );
         }
+      } else {
+        // 未定义的依赖需要有个地方监听
+        mod = this.shadowModMap.get(depName);
+        if (!mod) {
+          mod = this.createModule(depName, "", []);
+          this.shadowModMap.set(depName, mod);
+        }
+        waitPromise.push(
+          new Promise<void>((resolve) => {
+            mod!.onLoaded(resolve);
+          }),
+        );
       }
+    });
 
-      if (waitPromise.length > 0) {
-        return Promise.all(waitPromise).then();
-      }
+    if (waitPromise.length > 0) {
+      return Promise.all(waitPromise).then();
     }
+
     // 没有依赖 可直接执行
     return Promise.resolve();
   }

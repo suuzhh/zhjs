@@ -30,7 +30,7 @@ describe("ModuleLoader", () => {
     loader.define("a", modAPath, []);
     loader.define("b", modBPath, ["a"]);
     expect(hasScript(modAPath)).toBeTruthy();
-    expect(hasScript(modBPath)).toBeTruthy();
+    expect(mockScriptLoad(modAPath)).toBeTruthy();
 
     loader.require(["b"]).then(() => {
       expect(hasScript(modBPath)).toBeFalsy();
@@ -38,8 +38,8 @@ describe("ModuleLoader", () => {
       done();
     });
 
+    expect(hasScript(modBPath)).toBeTruthy();
     expect(mockScriptLoad(modBPath)).toBeTruthy();
-    expect(mockScriptLoad(modAPath)).toBeTruthy();
   });
 
   test("circular reference", (done) => {

@@ -23,6 +23,11 @@ export class Graph<K extends string | number | symbol = string> {
       : this.edges.set(base, new Set([forward]));
   }
 
+  /** 获取给定顶点的指向顶点 */
+  getVertexes(base: K) {
+    return [...(this.edges.get(base) ?? [])];
+  }
+
   /**
    * 添加顶点
    * @param v - 顶点
@@ -39,7 +44,7 @@ export class Graph<K extends string | number | symbol = string> {
    * 广度优先遍历
    *
    * breadth first traverse
-   * @param from - 遍历起始顶点
+   * @param from 遍历起始顶点
    */
   bfs(from: K) {
     // 图内没有该顶点 返回空数组
@@ -87,6 +92,8 @@ export class Graph<K extends string | number | symbol = string> {
 
     return [...result];
   }
+
+
 
   debug() {
     console.log(this.edges);

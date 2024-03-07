@@ -19,6 +19,7 @@ describe("Graph", () => {
     g.addEdge("b", "c");
     g.addEdge("a", "c");
     expect(g.bfs("a")).toEqual(["a", "b", "c"]);
+    expect(g.bfs("b")).toEqual(["b", "c"]);
   });
 
   test("dfs", () => {

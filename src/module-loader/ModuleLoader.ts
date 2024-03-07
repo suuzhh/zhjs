@@ -1,4 +1,4 @@
-import { Dispatcher } from "./Dispatcher";
+import { Graph } from "../graph";
 import { type Module, createModule } from "./Module";
 
 abstract class Loader {
@@ -24,51 +24,101 @@ abstract class Loader {
  */
 export class ModuleLoader implements Loader {
   /**
+   * 依赖的有向图
+   *
+   * 记录当前模块被多少模块所依赖
+   *
+   * 关联关系是 模块A => [依赖模块A的其它模块]
+   */
+  private dependenciesGraph: Graph;
+
+  /**
    * 用于标记已注册的模块
    */
   private definedModMap: Map<string, Module>;
 
-  /** 用于标记已被依赖 但是 未注册的模块 */
-  private waitForBeDepsMods: Map<string, Module>;
+  /** 未注册的模块暂存 */
+  // private shadowModMap: Map<string, Module>;
 
   constructor() {
     this.definedModMap = new Map();
-    this.waitForBeDepsMods = new Map();
+    // this.shadowModMap = new Map();
+
+    this.dependenciesGraph = new Graph();
   }
 
-  define(name: string, url: string, deps: string[] = []): void {
-    let mod = this.waitForBeDepsMods.get(name);
-    // 如果模块在等待队列， 需要把它更新到完成队列
+  /**
+   * 更新依赖结构
+   * @param deps
+   */
+  private updateGraph(name: string, deps: string[]) {
+    deps.forEach((depName) => {
+      this.dependenciesGraph.addEdge(depName, name);
+    });
+  }
+
+  /**
+   * 更新模块依赖状态
+   * @param name
+   */
+  private updateDepsState(name: string) {
+    const referenceParents = this.dependenciesGraph.getVertexes(name);
+    // 通知引用方 当前模块已加载
+
+    referenceParents.forEach((parentName) => {
+      this.tryToLoad(parentName);
+    });
+  }
+
+  /**
+   * 检查依赖是否全部完成加载，如果完成则加载自身
+   * @param name
+   */
+  private tryToLoad(name: string) {
+    const mod = this.definedModMap.get(name);
+
     if (mod) {
-      mod.isDefine = true;
-      // 更新url后会自动触发资源的加载
-      mod.url = url;
-      this.definedModMap.set(name, mod!);
-      // 从等待队列移除
-      this.waitForBeDepsMods.delete(name);
-    }
+      const deps = mod.deps;
 
-    // TODO： 重复定义模块是否需要通知更新？
-    if (!mod) {
-      // 目前行为与requirejs不一样 并不是执行模块 而是触发脚本的加载， 详情看Module.url的实现
-      mod = createModule(name, url, deps);
-
-      this.definedModMap.set(name, mod!);
-    }
-
-    // 通知其它依赖它的模块，该模块加载完成了！
-    // mod.onLoad(() => {
-    //   this.depsLoadedDispatcher.notify(name);
-    // });
-
-    // 判断当前模块的依赖是否已注册， 未注册的模块要加入到 `waitForBeDepsMods`
-    for (const dep of deps) {
-      if (!this.definedModMap.has(dep) && !this.waitForBeDepsMods.has(dep)) {
-        // 当前模块未注册 要加入到等待队列
-        mod = createModule(dep, "", []);
-        this.waitForBeDepsMods.set(dep, mod);
+      if (deps.length) {
+        if (
+          deps.every(
+            (depName) => this.definedModMap.get(depName)?.isLoaded ?? false,
+          )
+        ) {
+          mod.load();
+        }
+      } else {
+        mod.load();
       }
     }
+  }
+
+  define(name: string, url: string, deps: string[] = []) {
+    let mod = this.definedModMap.get(name);
+
+    if (!mod) {
+      mod = createModule(name, url, deps);
+      this.definedModMap.set(name, mod);
+    } else {
+      console.warn(`${name}模块已存在`);
+    }
+
+    // 是否存在依赖
+    if (deps.length) {
+      // 有依赖需要等待依赖加载完成后再通知自身加载
+      this.updateGraph(name, deps);
+      // 有可能依赖都加载完成了 可直接加载
+      this.tryToLoad(name);
+    } else {
+      // 没依赖直接可加载自身
+      mod.load();
+    }
+
+    // 通知依赖该模块的其它模块
+    mod.onLoaded(() => {
+      this.updateDepsState(name);
+    });
   }
 
   /**
@@ -76,6 +126,8 @@ export class ModuleLoader implements Loader {
    * @param deps - 依赖的模块
    */
   require(deps: string[] = []): Promise<void> {
+
+    return 
     const waitPromise: Promise<void>[] = [];
     //递归查找所有使用到的
     const depsSet = new Set<string>();

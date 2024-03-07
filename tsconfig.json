@@ -4,7 +4,7 @@
 
     "target": "ES2016",
     "module": "ESNext",
-    "lib": ["ES2015", "DOM"],
+    "lib": ["ESNext", "DOM"],
     "strict": true,
     "moduleResolution": "Bundler",
     "esModuleInterop": true,

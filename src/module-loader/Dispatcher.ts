@@ -10,16 +10,23 @@ export class Dispatcher {
 
   private EVENT_NAME = "__dispatcher__";
 
-  constructor() {
+  constructor(eventName?: string) {
     this.context = document.body;
+
+    if (eventName) {
+      this.EVENT_NAME = eventName;
+    }
   }
 
   listen(name: string, callback: Function) {
-    this.context.addEventListener(this.EVENT_NAME, (e) => {
+    // 只监听一次
+    const once = (e: Event) => {
       if (e instanceof CustomEvent && e.detail && e.detail === name) {
         callback();
       }
-    });
+    };
+
+    this.context.addEventListener(this.EVENT_NAME, once, { once: true });
   }
 
   notify(name: string) {

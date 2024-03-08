@@ -1,4 +1,13 @@
 /**
+ * 遍历的结果
+ */
+interface SearchResult<K> {
+  /** 是否存在循环引用， 如果存在 该对象保存重复引用的第一个节点 */
+  circularReferenceError?: { target: K };
+  result: Array<K>;
+}
+
+/**
  * 数据结构 - 有向图
  */
 export class Graph<K extends string | number | symbol = string> {
@@ -33,7 +42,9 @@ export class Graph<K extends string | number | symbol = string> {
    * @param v - 顶点
    */
   addVertex(v: K) {
-    this.edges.set(v, new Set());
+    if (!this.edges.has(v)) {
+      this.edges.set(v, new Set());
+    }
   }
 
   hasVertex(v: K) {
@@ -46,54 +57,83 @@ export class Graph<K extends string | number | symbol = string> {
    * breadth first traverse
    * @param from 遍历起始顶点
    */
-  bfs(from: K) {
+  bfs(from: K, visit?: (v: K) => void): SearchResult<K> {
+    const data: SearchResult<K> = {
+      result: [],
+    };
     // 图内没有该顶点 返回空数组
-    if (!this.hasVertex(from)) return [];
+    if (!this.hasVertex(from)) return data;
 
-    const result = new Set([from]);
+    const result = new Set<K>([from]);
     const queue = [from];
+
     while (queue.length) {
       const current = queue.shift()!;
+
+      // 访问当前节点
+      visit?.(current);
 
       // 相邻顶点
       const forwardVertices = this.edges.get(current);
 
       if (forwardVertices) {
-        forwardVertices.forEach((v) => {
-          queue.push(v);
-          result.add(v);
-        });
+        for (const v of forwardVertices) {
+          // 循环引用
+          if (!result.has(v)) {
+            queue.push(v);
+            result.add(v);
+          } else {
+            // 出现错误 需要把循环引用的定点记录
+            data.circularReferenceError = { target: current };
+          }
+        }
       }
     }
 
-    return [...result];
+    // 删除自身
+    result.delete(from);
+    data.result = [...result];
+
+    return data;
   }
 
   /**
    * 深度优先遍历
+   *
+   * @TODO 改用迭代器实现
    **/
-  dfs(from: K) {
+  dfs(from: K): SearchResult<K> {
+    const data: SearchResult<K> = {
+      result: [],
+    };
     // 图内没有该顶点 返回空数组
-    if (!this.hasVertex(from)) return [];
+    if (!this.hasVertex(from)) return data;
 
-    const result = new Set([from]);
+    const result = new Set<K>([from]);
 
-    const visit = (v: K) => {
-      const forwardsVertex = this.edges.get(v);
+    const visit = (current: K) => {
+      const forwardsVertex = this.edges.get(current);
       if (forwardsVertex) {
         forwardsVertex.forEach((v) => {
-          result.add(v);
-          visit(v);
+          if (!result.has(v)) {
+            result.add(v);
+            visit(v);
+          } else {
+            data.circularReferenceError = { target: current };
+          }
         });
       }
     };
 
     visit(from);
 
-    return [...result];
+    // 删除自身
+    result.delete(from);
+
+    data.result = [...result];
+
+    return data;
   }
-
-
 
   debug() {
     console.log(this.edges);

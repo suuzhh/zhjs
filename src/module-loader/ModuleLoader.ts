@@ -48,6 +48,15 @@ export class ModuleLoader implements Loader {
   }
 
   private createModule(name: string, url: string, deps: string[] = []) {
+    for (const depName of deps) {
+      this.dependenciesGraph.addEdge(depName, name);
+
+      if (!this.definedModMap.has(depName)) {
+        // 添加未定义依赖
+        this.shadowModMap.set(depName, this.createModule(depName, "", []));
+      }
+    }
+
     const mod = createModule(name, url, deps);
 
     // 通知依赖该模块的其它模块
@@ -59,18 +68,41 @@ export class ModuleLoader implements Loader {
   }
 
   /**
-   * 更新依赖结构
-   * @param deps
+   * 将未定义模块转变为已注册模块
+   * @param name
    */
-  private updateGraph(name: string, deps: string[]) {
-    deps.forEach((depName) => {
-      this.dependenciesGraph.addEdge(depName, name);
+  private updateShadowToDefined(
+    name: string,
+    url: string,
+    deps: string[] = [],
+  ) {
+    const mod = this.shadowModMap.get(name);
 
-      if (!this.definedModMap.has(depName)) {
-        // 添加未定义依赖
-        this.shadowModMap.set(depName, this.createModule(depName, "", []));
+    if (mod) {
+      for (const depName of deps) {
+        this.dependenciesGraph.addEdge(depName, name);
+
+        // 如果依赖未注册过 且 未定义过 需要先注册一一下
+        if (!this.definedModMap.has(depName)) {
+          // 添加未定义依赖
+          this.shadowModMap.set(depName, this.createModule(depName, "", []));
+        }
       }
-    });
+
+      mod.deps = deps;
+      mod.url = url;
+
+      mod.onLoaded(() => {
+        this.updateDepsState(name);
+      });
+
+      this.definedModMap.set(name, mod);
+
+      this.shadowModMap.delete(name);
+      if (deps.length <= 0) {
+        mod.load();
+      }
+    }
   }
 
   /**
@@ -96,15 +128,17 @@ export class ModuleLoader implements Loader {
     if (mod) {
       const deps = mod.deps;
 
+      let pass = true;
       if (deps.length) {
-        if (
-          deps.every(
-            (depName) => this.definedModMap.get(depName)?.isLoaded ?? false,
-          )
-        ) {
-          mod.load();
+        for (const depName of deps) {
+          pass = this.definedModMap.get(depName)?.isLoaded ?? false;
+          if (!pass) {
+            break;
+          }
         }
-      } else {
+      }
+
+      if (pass) {
         mod.load();
       }
     }
@@ -117,11 +151,7 @@ export class ModuleLoader implements Loader {
       mod = this.shadowModMap.get(name);
       if (mod) {
         // 之前未定义的依赖 现在要让它变成已定义状态
-        mod.deps = deps;
-        mod.url = url;
-
-        // 从未定义集合中删除
-        this.shadowModMap.delete(name);
+        this.updateShadowToDefined(name, url, deps);
       } else {
         mod = this.createModule(name, url, deps);
       }
@@ -131,16 +161,16 @@ export class ModuleLoader implements Loader {
       console.warn(`${name}模块已存在`);
     }
 
+    //加载完成 或 存在依赖 这里不需要手动触发加载 等待它的依赖通知它更新
     if (mod.isLoaded) return;
 
-    // 是否存在依赖
-    if (deps.length) {
-      // 有依赖需要等待依赖加载完成后再通知自身加载
-      this.updateGraph(name, deps);
-      // 有可能依赖都加载完成了 可直接加载
-      this.tryToLoad(name);
+    if (mod.deps.length > 0) {
+      // 检查是否存在循环依赖
+      const r = this.dependenciesGraph.dfs(name).circularReferenceError;
+      if (r) {
+        console.warn(`deps ${r.target} is circular reference`);
+      }
     } else {
-      // 没依赖直接可加载自身
       mod.load();
     }
   }

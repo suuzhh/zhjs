@@ -8,6 +8,8 @@ type RetryFunction = (attempt: number) => Promise<void> | void;
 
 /**
  * 重试
+ *
+ * 不使用递归实现 降低内存消耗
  * @param {RetryFunction} retryFn
  */
 export async function retry(retryFn: RetryFunction) {

@@ -82,12 +82,14 @@ describe("ModuleLoader", () => {
       done();
     });
 
-    expect(mockScriptLoad(modAPath)).toBeTruthy();
-
     // 延迟定义被依赖的模块b
     setTimeout(() => {
       loader.define("b", modBPath);
+
+      // 由于模块a依赖模块b 需要先触发模块b的事件
       expect(mockScriptLoad(modBPath)).toBeTruthy();
+
+      expect(mockScriptLoad(modAPath)).toBeTruthy();
     }, 100);
   });
 });

@@ -18,8 +18,8 @@ describe("Graph", () => {
     g.addEdge("a", "b");
     g.addEdge("b", "c");
     g.addEdge("a", "c");
-    expect(g.bfs("a")).toEqual(["a", "b", "c"]);
-    expect(g.bfs("b")).toEqual(["b", "c"]);
+    expect(g.bfs("a").result).toEqual(["b", "c"]);
+    expect(g.bfs("b").result).toEqual(["c"]);
   });
 
   test("dfs", () => {
@@ -27,6 +27,22 @@ describe("Graph", () => {
     g.addEdge("a", "b");
     g.addEdge("b", "c");
     g.addEdge("a", "c");
-    expect(g.dfs("a")).toEqual(["a", "b", "c"]);
+    expect(g.dfs("a").result).toEqual(["b", "c"]);
+  });
+
+  test("bfs circular reference", () => {
+    const g = new Graph();
+    g.addEdge("a", "b");
+    g.addEdge("b", "c");
+    g.addEdge("c", "a");
+    expect(g.bfs("a").result).toEqual(["b", "c"]);
+  });
+
+  test("dfs circular reference", () => {
+    const g = new Graph();
+    g.addEdge("a", "b");
+    g.addEdge("b", "c");
+    g.addEdge("c", "a");
+    expect(g.dfs("a").result).toEqual(["b", "c"]);
   });
 });

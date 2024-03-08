@@ -11,13 +11,18 @@ type RetryFunction = (attempt: number) => Promise<void> | void;
  * @param {RetryFunction} retryFn
  */
 export async function retry(retryFn: RetryFunction) {
-  async function execute(attempt: number) {
-    try {
-      return await retryFn(attempt);
-    } catch (err) {
-      return execute(attempt + 1);
-    }
-  }
+  return new Promise<void>(async (resolve) => {
+    let attempt = 1;
+    let tryAgain = false;
+    do {
+      try {
+        await retryFn(attempt++);
+        tryAgain = false;
+      } catch {
+        tryAgain = true;
+      }
+    } while (tryAgain);
 
-  return execute(1);
+    resolve();
+  });
 }

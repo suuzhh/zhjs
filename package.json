@@ -54,7 +54,8 @@
     "prebuild": "pnpm run _clean",
     "postbuild": "pnpm run _build:dts",
     "release:rc": "pnpm run _release -p rc --dry-run",
-    "release:patch": "pnpm run _release -r patch --dry-run"
+    "release:patch": "pnpm run _release -r patch --dry-run",
+    "lint:prettier": "prettier --check ./src/**/*.ts --write"
   },
   "repository": {
     "type": "git",

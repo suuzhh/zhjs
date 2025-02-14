@@ -1,7 +1,7 @@
 {
   "name": "zhjs",
   "version": "0.1.10",
-  "packageManager": "pnpm@8.13.1",
+  "packageManager": "pnpm@9.5.0",
   "description": "",
   "type": "module",
   "main": "dist/zhjs.es.mjs",
@@ -54,7 +54,8 @@
     "prebuild": "pnpm run _clean",
     "postbuild": "pnpm run _build:dts",
     "release:rc": "pnpm run _release -p rc --dry-run",
-    "release:patch": "pnpm run _release -r patch --dry-run"
+    "release:patch": "pnpm run _release -r patch --dry-run",
+    "lint:prettier": "prettier --check ./src/**/*.ts --write"
   },
   "repository": {
     "type": "git",
@@ -71,23 +72,22 @@
   },
   "homepage": "https://github.com/SuZHui/zhjs#readme",
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-node-resolve": "16.0.0",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.5",
-    "@types/jest": "^29.5.11",
+    "@rollup/plugin-typescript": "12.1.2",
+    "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "prettier": "^3.1.1",
-    "rimraf": "^5.0.5",
-    "rollup": "^4.9.1",
-    "rollup-plugin-dts": "^6.1.0",
+    "prettier": "^3.5.1",
+    "rimraf": "6.0.1",
+    "rollup": "^4.34.6",
+    "rollup-plugin-dts": "^6.1.1",
     "standard-version": "^9.5.0",
-    "ts-jest": "^29.1.1",
-    "tslib": "^2.6.2",
-    "typescript": "^5.3.3"
+    "ts-jest": "^29.2.5",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
-    "rxjs": "^7.8.1",
-    "umi-request": "^1.4.0"
+    "rxjs": "^7.8.1"
   }
 }

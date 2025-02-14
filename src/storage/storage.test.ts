@@ -63,7 +63,7 @@ describe("localStorage", () => {
     // 为了模拟初始化获取storage失败的场景，需要重新调用一次createStorage，让其识别不到原始的localStorage, 以便还原权限获取失败的场景
     const temp = createStorage("local");
 
-    expect(() => window.localStorage.getItem("a")).toThrowError();
+    expect(() => window.localStorage.getItem("a")).toThrow();
     expect(temp.get("a")).toBe(null);
 
     // test finish, reset storage
